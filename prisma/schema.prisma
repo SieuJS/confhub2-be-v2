@@ -1,0 +1,236 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Passenger {
+  id        String  @id @default(uuid())
+  firstName String @unique
+  lastName  String
+} 
+
+model Locations{
+  id String @id @default(uuid())
+  address String
+  city String
+  country String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isAvailable Boolean
+  conferenceId String
+  belongsTo ConferenceOrganizations @relation(fields : [conferenceId], references : [id])
+}
+
+model Dates {
+  id String @id @default(uuid())
+  fromDate DateTime
+  toDate DateTime
+  type Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  conferenceId String
+  belongsTo ConferenceOrganizations @relation(fields : [conferenceId], references : [id])
+}
+
+model Topics {
+  id String @id @default(uuid())
+  name String
+  inConferenceOrganizations TopicsInConferenceOrganizations[]
+  inJournals TopicsInJournals[]
+}
+
+model TopicsInConferenceOrganizations {
+  id String @id @default(uuid())
+  conferenceOrganizationId String
+  topicId String
+  belongToTopics Topics @relation(fields : [topicId], references : [id])
+  belongToConferenceOrganization ConferenceOrganizations @relation(fields : [conferenceOrganizationId], references : [id])
+}
+
+model ConferenceOrganizations {
+  id    String  @id @default(uuid())
+  year  String
+  accessType String
+  isAvailable Boolean
+  dates Dates[]
+  locations Locations[]
+  conferenceId String 
+  topics TopicsInConferenceOrganizations[]
+  belongsTo Conferences @relation(fields : [conferenceId], references : [id])
+}
+
+model Conferences {
+  id String @id @default(uuid())
+  title String
+  acronym String
+  creatorId String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  follows ConferenceFollows[]
+  likes ConferenceLikes[]
+  organizations ConferenceOrganizations[]
+  ranks ConferenceRanks[]
+  crawlJobs ConferenceCrawlJobs[]
+  createdByUser Users @relation(fields : [creatorId], references : [id])
+  
+}
+
+model ConferenceRanks{
+  id String @id @default(uuid())
+  year Int
+  conferenceId String
+  fieldOfResearchId String
+  rankId String
+  inFieldOfResearch FieldOfResearchs @relation(fields : [fieldOfResearchId], references : [id])
+  byRank Ranks @relation(fields : [rankId], references : [id])
+  belongsTo Conferences @relation(fields : [conferenceId], references : [id])
+}
+
+model FieldOfResearchs {
+  id String @id @default(uuid())
+  name String
+  code String
+  journalRanks JournalRanks[]
+  conferenceRanks ConferenceRanks[]
+}
+
+model Ranks {
+  id String @id @default(uuid())
+  name String
+  value Int
+  sourceId String
+  conferenceRanks ConferenceRanks[]
+  journalRanks JournalRanks[]
+  belongsTo Sources @relation(fields : [sourceId], references : [id])
+}
+
+model Sources {
+  id String @id @default(uuid())
+  name String
+  link String
+  ranks Ranks[]
+}
+
+model TopicsInJournals {
+  id String @id @default(uuid())
+  journalId String
+  topicId String
+  belongToTopics Topics @relation(fields : [topicId], references : [id])
+  belongToJournals Journals @relation(fields : [journalId], references : [id])
+}
+
+model JournalRanks {
+  id String @id @default(uuid())
+  year Int
+  journalId String
+  fieldOfResearchId String
+  rankId String
+  inFieldOfResearch FieldOfResearchs @relation(fields : [fieldOfResearchId], references : [id])
+  byRank Ranks @relation(fields : [rankId], references : [id])
+  belongsTo Journals @relation(fields : [journalId], references : [id])
+}
+
+model Journals {
+  id String @id @default(uuid())
+  name String
+  issn String
+  hIndex Int
+  publisher String
+  nation String
+  scope String
+  emailSubmission String
+  topics TopicsInJournals[]
+  journalRanks JournalRanks[]
+  journalLikes JournalLikes[]
+  journalFollows JournalFollows[]
+  crawlJobs JournalCrawlJobs[]
+  creator String
+  createdByUser Users @relation(fields : [creator], references : [id])
+}
+
+model ConferenceFollows {
+  id String @id @default(uuid())
+  conferenceId String
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  belongsTo Conferences @relation(fields : [conferenceId], references : [id])
+  byUser Users @relation(fields : [userId], references : [id])
+}
+
+model ConferenceLikes {
+  id String @id @default(uuid())
+  conferenceId String
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  belongTo Conferences @relation(fields : [conferenceId], references : [id])
+  byUser Users @relation(fields : [userId], references : [id])
+}
+
+model JournalLikes {
+  id String @id @default(uuid())
+  journalId String
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  belongTo Journals @relation(fields : [journalId], references : [id])
+  byUser Users @relation(fields : [userId], references : [id])
+}
+
+model JournalFollows {
+  id String @id @default(uuid())
+  journalId String
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  belongTo Journals @relation(fields : [journalId], references : [id])
+  byUser Users @relation(fields : [userId], references : [id])
+}
+
+model Users {
+  id String @id @default(uuid())
+  email String @unique
+  password String
+  firstName String
+  lastName String
+  dob DateTime
+  role String
+  followConference ConferenceFollows[]
+  likes ConferenceLikes[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdConferences Conferences[]
+  createdJournals Journals[]
+  journalLikes JournalLikes[]
+  journalFollows JournalFollows[]
+}
+
+model ConferenceCrawlJobs {
+  id String @id @default(uuid())
+  conferenceId String
+  status String
+  progress Int
+  message String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  belongsTo Conferences @relation(fields : [conferenceId], references : [id])
+}
+
+model JournalCrawlJobs {
+  id String @id @default(uuid())
+  journalId String
+  status String
+  progress Int
+  message String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  belongsTo Journals @relation(fields : [journalId], references : [id])
+}
