@@ -13,5 +13,8 @@ export interface Config {
     readonly HEALTH_TOKEN: string;
 
     readonly PASSENGERS_ALLOWED: string;
+    
+    readonly REDIS_HOST: string;
 
+    readonly REDIS_PORT: number;
 }

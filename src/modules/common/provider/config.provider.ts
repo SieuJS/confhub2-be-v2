@@ -7,7 +7,6 @@ export const configProvider = {
 
     provide: Service.CONFIG,
     useFactory: (): Config => {
-
         const env = process.env;
         const validationSchema = Joi.object<Config>().unknown().keys({
             API_PORT: Joi.number().required(),
@@ -16,9 +15,10 @@ export const configProvider = {
             JWT_SECRET: Joi.string().required(),
             JWT_ISSUER: Joi.string().required(),
             HEALTH_TOKEN: Joi.string().required(),
-            PASSENGERS_ALLOWED: Joi.string().valid('yes', 'no').required()
+            PASSENGERS_ALLOWED: Joi.string().valid('yes', 'no').required(),
+            REDIS_HOST: Joi.string().required(),
+            REDIS_PORT: Joi.number().required()
         });
-
         const result = validationSchema.validate(env);
         if (result.error) {
             throw new Error(`Configuration not valid: ${result.error.message}`);

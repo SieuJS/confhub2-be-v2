@@ -1,6 +1,7 @@
 import { Conferences } from "@prisma/client";
 import { PrismaService } from "../../common";
 import { Injectable } from "@nestjs/common";
+import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
 
 @Injectable()
 export class ConferenceService {
@@ -27,5 +28,9 @@ export class ConferenceService {
         return await this.prismaService.conferences.create({
             data : conference
         });
+    }
+
+    async putConferenceToQueue(conferencesToImport : ConferenceImportDTO[]) {
+        
     }
 }
