@@ -12,10 +12,27 @@ services:
       - 'postgresql_data:/bitnami/postgresql'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-      - POSTGRESQL_DATABASE=nestjs
-      - POSTGRESQL_USERNAME=nestjs
+      - POSTGRESQL_DATABASE=confhub
+      - POSTGRESQL_USERNAME=confhub
       - POSTGRESQL_PASSWORD=password
 
+  confhub_redis:
+        container_name: confhub_redis
+        image: redis:alpine
+        expose:
+          - 6379
+        ports:
+          - 6379:6379 # Public port để lát nữa test multiple worker
+        restart: unless-stopped
+  confhub_redis_commander:
+        container_name: confhub_redis_commander
+        image: rediscommander/redis-commander:latest
+        environment:
+          - REDIS_HOSTS=local:confhub_redis:6379
+        ports:
+          - '8088:8081'
+        depends_on:
+          - confhub_redis
 volumes:
   postgresql_data:
     driver: local

@@ -1,6 +1,8 @@
 import { Conferences } from "@prisma/client";
 import { PrismaService } from "../../common";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class ConferenceService {
     constructor (
         private readonly prismaService : PrismaService
@@ -9,7 +11,7 @@ export class ConferenceService {
     }
 
     async getConferences() {
-        return await this.prismaService.conferences.findMany();
+        return await this.prismaService.conferences.findMany({});
     }
 
     async getConferenceById(id : string

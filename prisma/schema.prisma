@@ -18,9 +18,12 @@ model Passenger {
 
 model Locations{
   id String @id @default(uuid())
-  address String
-  city String
-  country String
+  address String?
+  city String?
+  country String?
+  state String?
+  continent String?
+  location String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isAvailable Boolean
@@ -28,15 +31,16 @@ model Locations{
   belongsTo ConferenceOrganizations @relation(fields : [conferenceId], references : [id])
 }
 
-model Dates {
+model ConferenceDates {
   id String @id @default(uuid())
+  organizationId String
   fromDate DateTime
   toDate DateTime
-  type Boolean
+  type String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  conferenceId String
-  belongsTo ConferenceOrganizations @relation(fields : [conferenceId], references : [id])
+  isAvailable Boolean
+  belongsTo ConferenceOrganizations @relation(fields : [organizationId], references : [id])
 }
 
 model Topics {
@@ -56,21 +60,24 @@ model TopicsInConferenceOrganizations {
 
 model ConferenceOrganizations {
   id    String  @id @default(uuid())
-  year  String
+  year  String  
   accessType String
   isAvailable Boolean
-  dates Dates[]
+  conferenceDate ConferenceDates[]
   locations Locations[]
-  conferenceId String 
+  conferenceId String
+  summerize String
+  callForPaper String
+  link String
   topics TopicsInConferenceOrganizations[]
   belongsTo Conferences @relation(fields : [conferenceId], references : [id])
 }
 
 model Conferences {
   id String @id @default(uuid())
-  title String
+  title String 
   acronym String
-  creatorId String 
+  creatorId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   follows ConferenceFollows[]
@@ -80,6 +87,7 @@ model Conferences {
   crawlJobs ConferenceCrawlJobs[]
   createdByUser Users @relation(fields : [creatorId], references : [id])
   
+  @@unique([title, acronym])
 }
 
 model ConferenceRanks{

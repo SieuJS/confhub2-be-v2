@@ -1,7 +1,8 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 import { IsUUID, Length } from 'class-validator';
-import { ConferenceDatesDTO } from '../conference-dates/conference-dates.dto';
+import { ConferenceDatesDTO } from '../conference-organization/conference-dates.dto';
+import { ConferenceLocation } from '../conference-organization/conference-location';
 
 export class ConferenceDTO {
     @ApiProperty({description : 'Id of conference' , example : '123e4567-e89b-12d3-a456-426614174000'})
@@ -18,7 +19,7 @@ export class ConferenceDTO {
 
     @ApiProperty({description : "Location of conference" , example : 'Paris'})
     @Length(1, 255)
-    location: string;
+    location: ConferenceLocation[]
 
     @ApiProperty({description : 'Rank of conference', example : 'A*'})
     rank: string
@@ -30,7 +31,7 @@ export class ConferenceDTO {
     year: number
 
     @ApiProperty({description : 'Field of conference', example : 'Computer Science'})
-    field: string[]
+    fieldOfResearches: string[]
 
     @ApiProperty({description : 'Topics of conference', example : 'Artificial Intelligence'})
     topics: string[]
