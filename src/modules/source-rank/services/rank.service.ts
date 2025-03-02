@@ -5,15 +5,22 @@ import { RankDTO } from "../models/rank.dto";
 
 @Injectable()
 export class RankService { 
-    private readonly prismaService : PrismaService;
+    private readonly prismaService: PrismaService;
+    
+    constructor(prismaService: PrismaService) {
+        this.prismaService = prismaService;
+    }
+    
+    
 
-    public async createRank (rank : RankInputDTO) : Promise<RankDTO> {
-        const rankCreated =  await this.prismaService.ranks.create({
-            data : {
-                name : rank.name,
-                value : rank.value,
-                sourceId  : rank.source.id
-            },include : {
+    public async createRank(rank: RankInputDTO): Promise<RankDTO> {
+        const rankCreated = await this.prismaService.ranks.create({
+            data: {
+                name: rank.name,
+                value: rank.value,
+                sourceId: rank.source.id
+            },
+            include: {
                 belongsTo: true
             }
         })
@@ -48,5 +55,24 @@ export class RankService {
         }
 
         return await this.createRank(rank);
+    }
+
+    public async findOrCreateFieldOfResearch (fieldOfResearch : string) {
+        const existingFieldOfResearch = await this.prismaService.fieldOfResearchs.findFirst({
+            where : {
+                name : fieldOfResearch
+            }
+        })
+
+        if(existingFieldOfResearch) {
+            return existingFieldOfResearch;
+        }
+
+        return await this.prismaService.fieldOfResearchs.create({
+            data : {
+                name : fieldOfResearch,
+                code : 'UNDEFINE'
+            }
+        })
     }
 }

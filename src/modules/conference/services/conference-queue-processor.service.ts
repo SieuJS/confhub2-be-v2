@@ -33,7 +33,7 @@ export class ConferenceImportProcessor extends WorkerHost {
     }
 
     async importTheConference(conference : ConferenceImportDTO) {
-        const conferenceInstance = await this.conferenceService.createConference(conference);
+        const conferenceInstance = await this.conferenceService.findOrCreateConference(conference);
 
         const sourceIntance = await this.sourceService.findOrCreateSource({
 
@@ -48,5 +48,6 @@ export class ConferenceImportProcessor extends WorkerHost {
         }
 
         const rankInstance = await this.rankService.findOrCreateRank(rankInput)
+
     }
 }

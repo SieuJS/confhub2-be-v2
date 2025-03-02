@@ -26,7 +26,6 @@ import { Service } from './tokens';
         PassengerModule,
         SourceRankModule,
         UserModule,
-        
         ConferencesModule
     ]
 })
