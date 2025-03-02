@@ -37,5 +37,10 @@ export class FieldOfResearchService {
                 `Imported ${fieldsOfResearch.length} fields of research.`
             );
         }
+        else {
+            this.logService.info(
+                'Field of research data already exists. Skipping import.'
+            )
+        }
     }
 }
