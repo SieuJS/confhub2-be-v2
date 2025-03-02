@@ -121,8 +121,8 @@ model Ranks {
 
 model Sources {
   id String @id @default(uuid())
-  name String
-  link String
+  name String @unique
+  link String? 
   ranks Ranks[]
 }
 
