@@ -22,4 +22,20 @@ export class SourceService {
         return source ? true : false;
     }
 
+    public async findOrCreateSource (source : SourceInputDTO) : Promise<SourceDTO> {
+        const existingSource = await this.prismaService.sources.findFirst({
+            where : {
+                name : source.name
+            }
+        })
+
+        if(existingSource) {
+            return existingSource;
+        }
+
+        return await this.prismaService.sources.create({
+            data : source
+        })
+    }
+
 }

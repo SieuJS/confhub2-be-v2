@@ -1,6 +1,7 @@
 import { Conferences } from "@prisma/client";
 import { PrismaService } from "../../common";
 import { Injectable } from "@nestjs/common";
+import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
 
 @Injectable()
 export class ConferenceService {
@@ -15,6 +16,43 @@ export class ConferenceService {
             where: {
                 id,
             },
+        });
+    }
+
+    async isExistsConferenceNameAndAcronym( title : string , acronym : string) {
+        const conference = await this.prismaService.conferences.findFirst({
+            where : {
+                title,
+                acronym
+            }
+        });
+        return conference ? true : false;
+    }
+
+    async createConference(conference : ConferenceImportDTO) {
+        if(await this.isExistsConferenceNameAndAcronym(conference.title, conference.acronym)) {
+            throw new Error(`Conference with title ${conference.title} and acronym ${conference.acronym} already exists`);
+        }
+
+        return await this.prismaService.conferences.create({
+            data: conference,
+        });
+    }
+
+    async findOrCreateConference(conference: ConferenceImportDTO) {
+        const existingConference = await this.prismaService.conferences.findFirst({
+            where: {
+                title: conference.title,
+                acronym: conference.acronym,
+            },
+        });
+
+        if (existingConference) {
+            return existingConference;
+        }
+
+        return await this.prismaService.conferences.create({
+            data: conference,
         });
     }
 

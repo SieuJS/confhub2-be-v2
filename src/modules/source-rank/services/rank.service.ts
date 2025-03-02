@@ -25,4 +25,28 @@ export class RankService {
         }
 
     }
+
+    public async findOrCreateRank (rank : RankInputDTO) : Promise<RankDTO> {
+        const existingRank = await this.prismaService.ranks.findFirst({
+            where : {
+                name : rank.name,
+                value : rank.value,
+                sourceId : rank.source.id
+            },
+            include : {
+                belongsTo : true
+            }
+        })
+
+        if(existingRank) {
+            return {
+                id : existingRank.id,
+                name : existingRank.name,
+                value : existingRank.value,
+                source : existingRank.belongsTo
+            }
+        }
+
+        return await this.createRank(rank);
+    }
 }

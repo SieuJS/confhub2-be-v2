@@ -27,5 +27,4 @@ export class ConferenceController {
     async importConferences(@Body(ConferenceDtoToModelPipe) conference : Conferences) {
         return await this.conferenceService.importConferences(conference);
     }
-
 }
