@@ -8,16 +8,26 @@ import { ConferenceService } from "./conference.service";
 import { SourceService } from "../../source-rank/services/source.service";
 import { RankService } from "../../source-rank/services/rank.service";
 import { RankInputDTO } from "../../source-rank/models/rank-input.dto";
+import { FieldOfResearchService } from "../../source-rank/services/field-of-research.service";
+import { Injectable } from "@nestjs/common";
 
+@Injectable ()
 @Processor(ConferenceQueueName.TO_IMPORT) 
 export class ConferenceImportProcessor extends WorkerHost {
-    private readonly loggerService : LoggerService;
-    private readonly conferenceService :  ConferenceService ; 
-    private readonly sourceService : SourceService;
-    private readonly rankService : RankService;
+
+    constructor(
+        private loggerService : LoggerService,
+        private conferenceService : ConferenceService,
+        private sourceService : SourceService,
+        private rankService : RankService,
+        private fieldOfResearch : FieldOfResearchService
+    ) {
+        super();
+    }
+
 
     async process(job : Job<ConferenceImportDTO, any, string> , token : string) {
-
+        console.log("Processing job", job);
         this.loggerService.info(`Processing job ${job.id} with data ${job.data}`);
 
         switch(job.name) {
@@ -48,6 +58,12 @@ export class ConferenceImportProcessor extends WorkerHost {
         }
 
         const rankInstance = await this.rankService.findOrCreateRank(rankInput)
-
+        console.log("Rank instance", rankInstance);
+        conference.fieldOfResearchCodes.forEach(async code => {
+            const fieldOfResearch = await this.fieldOfResearch.getFieldOfResearchByCode(code);
+            if(fieldOfResearch) {
+                await this.conferenceService.createConferenceRank(conferenceInstance.id,rankInstance, fieldOfResearch.id , conference.year);
+            }
+        });
     }
 }

@@ -3,7 +3,7 @@ import { PrismaService } from "../../common";
 import { SourceInputDTO } from "../models/source-input.dto";
 import { SourceDTO } from "../models/source.dto";
 
-Injectable() 
+@Injectable() 
 export class SourceService {
     private readonly prismaService : PrismaService; 
 

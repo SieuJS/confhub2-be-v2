@@ -43,4 +43,14 @@ export class FieldOfResearchService {
             )
         }
     }
+
+    public async getFieldOfResearchByCode (forCode : string) {
+        return await this.prismaService.fieldOfResearchs.findFirst({
+            where : {
+                code : forCode
+            }
+        });
+        
+    }
+
 }

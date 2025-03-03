@@ -2,7 +2,6 @@ import { Conferences } from "@prisma/client";
 import { PrismaService } from "../../common";
 import { Injectable } from "@nestjs/common";
 import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
-import { ConferenceDTO } from "../models/conference/conference.dto";
 import { RankDTO } from "../../source-rank/models/rank.dto";
 
 @Injectable()
@@ -59,15 +58,16 @@ export class ConferenceService {
     }
 
     async importConferences(conference: Conferences) {
+        console.log(conference);
         return await this.prismaService.conferences.create({
             data: conference,
         });
     }
 
-    async createConferenceRank (conferenceInstance : ConferenceDTO, rankInstance : RankDTO, fieldOfResearchId : string , year : number) {
+    async createConferenceRank (conferenceId : string, rankInstance : RankDTO, fieldOfResearchId : string , year : number) {
         return await this.prismaService.conferenceRanks.create ({
             data : {
-                conferenceId : conferenceInstance.id ,
+                conferenceId : conferenceId ,
                 rankId : rankInstance.id , 
                 fieldOfResearchId ,
                 year 

@@ -6,6 +6,7 @@ import { FieldOfResearchService } from './services/field-of-research.service';
 
 @Module({
     imports : [CommonModule] ,
-    providers : [RankService , SourceService , FieldOfResearchService]
+    providers : [RankService , SourceService , FieldOfResearchService],
+    exports : [RankService , SourceService , FieldOfResearchService]
 })
 export class SourceRankModule {}

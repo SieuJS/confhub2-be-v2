@@ -1,16 +1,16 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ConferenceService } from "../services/conference.service";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
-import { ConferenceDtoToModelPipe } from "../pipes/conference-dto-to-model.pipe";
-import { Conferences } from "@prisma/client";
+import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ConferencePaginationDTO } from "../models/conference/conference-pagination.dto";
 import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
+import { ConferenceImportQueueService } from "../services/conference-import-queue.service";
 
 @ApiTags('/conference')
 @Controller('conference')
 export class ConferenceController {
     constructor(
-        private readonly conferenceService : ConferenceService
+        private readonly conferenceService : ConferenceService,
+        private readonly conferenceImportQueueService : ConferenceImportQueueService
     ){
         
     }
@@ -21,10 +21,12 @@ export class ConferenceController {
         return await this.conferenceService.getConferences();
     }
 
-    @ApiTags('/import')
     @ApiResponse({status : 200, description : 'Import conferences', type : ConferenceImportDTO, isArray : true})
+    @ApiBody({
+        type : ConferenceImportDTO
+    })
     @Post('import')
-    async importConferences(@Body(ConferenceDtoToModelPipe) conference : Conferences) {
-        return await this.conferenceService.importConferences(conference);
+    async importConferences(@Body() conference : ConferenceImportDTO) {
+        return await this.conferenceImportQueueService.addConferenceToImportQueue(conference);
     }
 }

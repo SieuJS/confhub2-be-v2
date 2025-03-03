@@ -7,7 +7,7 @@ export class ConferenceImportDTO extends PickType(ConferenceDTO, [
     'source' , 
     'rank',
     'year',
-    'fieldOfResearches',
+    'fieldOfResearchCodes',
     'creatorId',
 ]) {
 
