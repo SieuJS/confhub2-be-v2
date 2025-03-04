@@ -8,13 +8,14 @@ import { ConferenceQueueName } from './constants/conference-queue-name';
 import { ConferenceImportQueueService } from './services/conference-import-queue.service';
 import { ConferenceImportProcessor } from './services/conference-import.processor';
 import { SourceRankModule } from '../source-rank/source-rank.module';
+import { ConferenceImportGateway } from './gateways/conference-import.gateway';
 
 @Module({
   imports : [CommonModule, BullModule.registerQueue({
     name : ConferenceQueueName.TO_IMPORT,
     prefix : ConferenceQueueName.TO_IMPORT_PREFIX
   }) , SourceRankModule ],
-  providers: [ ConferenceService, ConferenceDtoToModelPipe,ConferenceImportQueueService, ConferenceImportProcessor],
+  providers: [ ConferenceService, ConferenceDtoToModelPipe,ConferenceImportQueueService, ConferenceImportProcessor, ConferenceImportGateway],
   controllers: [ConferenceController],
 })
 export class ConferencesModule {}

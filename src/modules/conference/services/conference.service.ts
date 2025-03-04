@@ -67,10 +67,10 @@ export class ConferenceService {
     async createConferenceRank (conferenceId : string, rankInstance : RankDTO, fieldOfResearchId : string , year : number) {
         return await this.prismaService.conferenceRanks.create ({
             data : {
-                conferenceId : conferenceId ,
-                rankId : rankInstance.id , 
-                fieldOfResearchId ,
-                year 
+                conferenceId : conferenceId,
+                rankId : rankInstance.id, 
+                fieldOfResearchId,
+                year
             }
         })
     }
