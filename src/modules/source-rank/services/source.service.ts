@@ -5,7 +5,9 @@ import { SourceDTO } from "../models/source.dto";
 
 @Injectable() 
 export class SourceService {
-    private readonly prismaService : PrismaService; 
+    constructor(
+    private readonly prismaService : PrismaService
+    ) {}
 
     public createSource (source : SourceInputDTO) : Promise<SourceDTO> {
         return this.prismaService.sources.create ({

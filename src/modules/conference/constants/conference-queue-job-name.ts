@@ -1,3 +1,4 @@
 export enum ConferenceQueueJobName  {
-    IMPORT_CONFERENCE = 'IMPORT'
+    IMPORT_CONFERENCE = 'IMPORT',
+    NOTIFTY_CONFERENCE_IMPORT = 'NOTIFY_IMPORT'
 }

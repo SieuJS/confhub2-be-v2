@@ -18,4 +18,10 @@ export class ConferenceImportQueueService {
     async addConferenceToImportQueue(conferenceToImport : ConferenceImportDTO) {
         return await this.conferenceImportQueue.add(ConferenceQueueJobName.IMPORT_CONFERENCE,conferenceToImport )
     }
+
+    async notyfyImportedConference() {
+        return await this.conferenceImportQueue.add(ConferenceQueueJobName.NOTIFTY_CONFERENCE_IMPORT, {
+            message : 'Conference imported successfully'
+        })
+    }
 }

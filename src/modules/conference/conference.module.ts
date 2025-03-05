@@ -6,7 +6,7 @@ import { ConferenceDtoToModelPipe } from './pipes/conference-dto-to-model.pipe';
 import { BullModule } from '@nestjs/bullmq';
 import { ConferenceQueueName } from './constants/conference-queue-name';
 import { ConferenceImportQueueService } from './services/conference-import-queue.service';
-import { ConferenceImportProcessor } from './services/conference-import.processor';
+import { ConferenceImportProcessor } from './queues/conference-import.processor';
 import { SourceRankModule } from '../source-rank/source-rank.module';
 import { ConferenceImportGateway } from './gateways/conference-import.gateway';
 
