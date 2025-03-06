@@ -223,6 +223,7 @@ model Users {
 
 model ConferenceCrawlJobs {
   id String @id @default(uuid())
+  title String
   conferenceId String
   status String
   progress Int

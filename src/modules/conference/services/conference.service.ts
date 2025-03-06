@@ -1,12 +1,20 @@
-import { Conferences } from "@prisma/client";
 import { PrismaService } from "../../common";
 import { Injectable } from "@nestjs/common";
 import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
 import { RankDTO } from "../../source-rank/models/rank.dto";
+import { RankInputDTO } from "src/modules/source-rank/models/rank-input.dto";
+import { SourceService } from "../../source-rank/services/source.service";
+import { RankService } from "../../source-rank/services/rank.service";
+import { FieldOfResearchService } from "../../source-rank/services/field-of-research.service";
 
 @Injectable()
 export class ConferenceService {
-    constructor(private readonly prismaService: PrismaService) {}
+    constructor(
+        private readonly prismaService: PrismaService,
+        private readonly sourceService : SourceService,
+        private readonly rankService : RankService,
+        private readonly fieldOfResearch : FieldOfResearchService
+    ) {}
 
     async getConferences() {
         return await this.prismaService.conferences.findMany({});
@@ -64,10 +72,26 @@ export class ConferenceService {
         });
     }
 
-    async importConferences(conference: Conferences) {
-        console.log(conference);
-        return await this.prismaService.conferences.create({
-            data: conference,
+    async importConferences(conference: ConferenceImportDTO) {
+        const conferenceInstance = await this.findOrCreateConference(conference);
+
+        const sourceIntance = await this.sourceService.findOrCreateSource({
+                name : conference.source ,
+                link : ''
+        })
+
+        const rankInput : RankInputDTO = {
+            name : conference.rank , 
+            source : sourceIntance,
+            value : 0
+        }
+
+        const rankInstance = await this.rankService.findOrCreateRank(rankInput)
+        conference.fieldOfResearchCodes.forEach(async code => {
+            const fieldOfResearch = await this.fieldOfResearch.getFieldOfResearchByCode(code);
+            if(fieldOfResearch) {
+                await this.createConferenceRank(conferenceInstance.id,rankInstance, fieldOfResearch.id , conference.year);
+            }
         });
     }
 
@@ -81,5 +105,7 @@ export class ConferenceService {
             }
         })
     }
+
+    async queryConferences (){}
 
 }

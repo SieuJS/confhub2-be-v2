@@ -1,7 +1,5 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ConferenceImportDTO } from '../models/conference/conference-import.dto';
-import { ConferenceImportQueueService } from '../services/conference-import-queue.service';
 import { randomUUID } from 'crypto';
 
 @WebSocketGateway({
@@ -13,14 +11,13 @@ export class ConferenceImportGateway {
     @WebSocketServer()
     server: Server;
 
-    constructor(private conferenceImportQueueService : ConferenceImportQueueService) {}
+    constructor() {}
 
     // First channel for conference import status
     @SubscribeMessage('conference-import')
-    handleImportStatus(@MessageBody() data: ConferenceImportDTO): void {
+    handleImportStatus(@MessageBody() data: any): void {
         const id = randomUUID();
         data.id = id;
-        this.conferenceImportQueueService.addConferenceToImportQueue(data);
         this.server.emit('conference-import', { status: 'PENDING', message: 'Conference import job has been added to the queue',  id });
     }
 

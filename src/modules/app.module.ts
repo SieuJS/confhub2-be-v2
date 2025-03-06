@@ -7,6 +7,7 @@ import { ConferencesModule } from './conference/conference.module';
 import { SourceRankModule } from './source-rank/source-rank.module';
 import { UserModule } from './user/user.module';
 import { Service } from './tokens';
+import { ConferenceJobModule } from './conference-job/conference-job.module';
 
 @Module({
     imports:
@@ -26,6 +27,7 @@ import { Service } from './tokens';
         PassengerModule,
         SourceRankModule,
         UserModule,
+        ConferenceJobModule,
         ConferencesModule
     ]
 })
