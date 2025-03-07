@@ -9,6 +9,8 @@ import {
     FieldOfResearchService,
 } from "../../source-rank";
 import { RankInputDTO } from "src/modules/source-rank/models/rank-input.dto";
+import { ConferenceImportResponseDTO } from "../models/conference-response/conference-import-response.dto";
+import { ConferenceCrawlInputDTO } from "../models/conference-crawl/conference-crawl";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -41,7 +43,7 @@ export class ConferenceController {
         type: ConferenceImportDTO,
     })
     @Post("import")
-    async importConferences(@Body() conferenceImport: ConferenceImportDTO) {
+    async importConferences(@Body() conferenceImport: ConferenceImportDTO) : Promise<ConferenceImportResponseDTO> {
         let isExists = true;
         let conferenceInstance =
             await this.conferenceService.getConferenceByAcronymAndTitle(
@@ -85,6 +87,14 @@ export class ConferenceController {
             conferenceId: conferenceInstance.id,
             isExists,
         };
+    }
+
+    @Post('crawl')
+    @ApiBody({
+        type : ConferenceCrawlInputDTO
+    })
+    async crawlConferences(@Body() conferenceCrawl : ConferenceCrawlInputDTO) {
+        console.log("heelo")
     }
 
 }
