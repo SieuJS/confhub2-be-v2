@@ -1,30 +1,90 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ConferenceService } from "../services/conference.service";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ConferencePaginationDTO } from "../models/conference/conference-pagination.dto";
 import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
+import {
+    RankService,
+    SourceService,
+    FieldOfResearchService,
+} from "../../source-rank";
+import { RankInputDTO } from "src/modules/source-rank/models/rank-input.dto";
 
-@ApiTags('/conference')
-@Controller('conference')
+@ApiTags("/conference")
+@Controller("conference")
 export class ConferenceController {
     constructor(
-        private readonly conferenceService : ConferenceService,
-    ){
-        
-    }
+        private readonly conferenceService: ConferenceService,
+        private readonly rankService: RankService,
+        private readonly sourceService: SourceService,
+        private readonly fieldOfResearch: FieldOfResearchService
+    ) {}
 
-    @ApiResponse({status : 200, description : 'Get all conferences', type : ConferencePaginationDTO, isArray : true})
+    @ApiResponse({
+        status: 200,
+        description: "Get all conferences",
+        type: ConferencePaginationDTO,
+        isArray: true,
+    })
     @Get()
     async getConferences() {
         return await this.conferenceService.getConferences();
     }
 
-    @ApiResponse({status : 200, description : 'Import conferences', type : ConferenceImportDTO, isArray : true})
-    @ApiBody({
-        type : ConferenceImportDTO
+    @ApiResponse({
+        status: 200,
+        description: "Import conferences",
+        type: ConferenceImportDTO,
+        isArray: true,
     })
-    @Post('import')
-    async importConferences(@Body() conference : ConferenceImportDTO) {
-        return await this.conferenceService.importConferences(conference);
+    @ApiBody({
+        type: ConferenceImportDTO,
+    })
+    @Post("import")
+    async importConferences(@Body() conferenceImport: ConferenceImportDTO) {
+        let isExists = true;
+        let conferenceInstance =
+            await this.conferenceService.getConferenceByAcronymAndTitle(
+                conferenceImport.title,
+                conferenceImport.acronym
+            );
+
+        if (!conferenceInstance) {
+            isExists = false;
+            conferenceInstance = await this.conferenceService.createConference(
+                conferenceImport
+            );
+        }
+
+        const sourceIntance = await this.sourceService.findOrCreateSource({
+            name: conferenceImport.source,
+            link: "",
+        });
+
+        const rankInput: RankInputDTO = {
+            name: conferenceImport.rank,
+            source: sourceIntance,
+            value: 0,
+        };
+
+        const rankInstance = await this.rankService.findOrCreateRank(rankInput);
+        conferenceImport.fieldOfResearchCodes.forEach(async (code) => {
+            const fieldOfResearch =
+                await this.fieldOfResearch.getFieldOfResearchByCode(code);
+            if (fieldOfResearch) {
+                await this.conferenceService.createConferenceRank(
+                    conferenceInstance.id,
+                    rankInstance,
+                    fieldOfResearch.id,
+                    conferenceImport.year
+                );
+            }
+        });
+
+        return {
+            conferenceId: conferenceInstance.id,
+            isExists,
+        };
     }
+
 }

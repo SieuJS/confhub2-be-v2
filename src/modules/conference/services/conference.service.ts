@@ -2,10 +2,6 @@ import { PrismaService } from "../../common";
 import { Injectable } from "@nestjs/common";
 import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
 import { RankDTO } from "../../source-rank/models/rank.dto";
-import { RankInputDTO } from "src/modules/source-rank/models/rank-input.dto";
-import { SourceService } from "../../source-rank/services/source.service";
-import { RankService } from "../../source-rank/services/rank.service";
-import { FieldOfResearchService } from "../../source-rank/services/field-of-research.service";
 import { ConferenceQueryDto } from "../models/conference/conference-query.dto";
 import { PaginationService } from "../../common/services/pagination.service";
 
@@ -13,9 +9,6 @@ import { PaginationService } from "../../common/services/pagination.service";
 export class ConferenceService {
     constructor(
         private readonly prismaService: PrismaService,
-        private readonly sourceService: SourceService,
-        private readonly rankService: RankService,
-        private readonly fieldOfResearch: FieldOfResearchService,
         private readonly paginationService: PaginationService<any>
     ) {}
 
@@ -101,30 +94,7 @@ export class ConferenceService {
             conference
         );
 
-        const sourceIntance = await this.sourceService.findOrCreateSource({
-            name: conference.source,
-            link: "",
-        });
-
-        const rankInput: RankInputDTO = {
-            name: conference.rank,
-            source: sourceIntance,
-            value: 0,
-        };
-
-        const rankInstance = await this.rankService.findOrCreateRank(rankInput);
-        conference.fieldOfResearchCodes.forEach(async (code) => {
-            const fieldOfResearch =
-                await this.fieldOfResearch.getFieldOfResearchByCode(code);
-            if (fieldOfResearch) {
-                await this.createConferenceRank(
-                    conferenceInstance.id,
-                    rankInstance,
-                    fieldOfResearch.id,
-                    conference.year
-                );
-            }
-        });
+        
     }
 
     async createConferenceRank(
@@ -186,5 +156,26 @@ export class ConferenceService {
             },
         });
         return this.paginationService.paginate(conferenceList, page, perPage);
+    }
+
+    async getConferenceByAcronymAndTitle(title: string, acronym: string) {
+        return await this.prismaService.conferences.findFirst({
+            where: {
+                title,
+                acronym,
+            },
+        });
+    }
+
+    async createConferenceByImport(conferenceImport : ConferenceImportDTO) {
+        return this.prismaService.conferences.create({
+            data : {
+                title: conferenceImport.title,
+                acronym: conferenceImport.acronym,
+                creatorId: conferenceImport.creatorId,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            }
+        });
     }
 }
