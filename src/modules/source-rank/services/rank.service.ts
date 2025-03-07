@@ -21,14 +21,14 @@ export class RankService {
                 sourceId: rank.source.id
             },
             include: {
-                belongsTo: true
+                belongsToSource: true
             }
         })
         return {
             id : rankCreated.id,
             name : rankCreated.name,
             value : rankCreated.value,
-            source : rankCreated.belongsTo
+            source : rankCreated.belongsToSource
         }
 
     }
@@ -41,7 +41,7 @@ export class RankService {
                 sourceId : rank.source.id
             },
             include : {
-                belongsTo : true
+                belongsToSource : true
             }
         })
 
@@ -50,7 +50,7 @@ export class RankService {
                 id : existingRank.id,
                 name : existingRank.name,
                 value : existingRank.value,
-                source : existingRank.belongsTo
+                source : existingRank.belongsToSource
             }
         }
 

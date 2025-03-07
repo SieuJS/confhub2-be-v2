@@ -1,12 +1,12 @@
 import { Processor, WorkerHost } from "@nestjs/bullmq";
-import { ConferenceQueueName } from "../constants/conference-queue-name";
 import { LoggerService } from "../../common";
 import { Job } from "bullmq";
-import { ConferenceQueueJobName } from "../constants/conference-queue-job-name";
 import { Injectable } from "@nestjs/common";
 import { ConferenceImportGateway } from "../gateways/conference-import.gateway";
+import { CONFERENCE_QUEUE_NAME } from "../constants/queue-name";
+import { JOB_NAME } from "../constants/job-name";
 @Injectable ()
-@Processor(ConferenceQueueName.TO_IMPORT) 
+@Processor(CONFERENCE_QUEUE_NAME.CRAWL) 
 export class ConferenceImportProcessor extends WorkerHost {
 
     constructor(
@@ -17,11 +17,11 @@ export class ConferenceImportProcessor extends WorkerHost {
 
     async process(job : Job<any, any, string> , token : string) {
         switch(job.name) {
-            case ConferenceQueueJobName.IMPORT_CONFERENCE : 
+            case JOB_NAME.CRAWL : 
                 this.loggerService.info(`Importing conference ${JSON.stringify(job.data)}`);
 
                 break;
-            case ConferenceQueueJobName.NOTIFTY_CONFERENCE_IMPORT :
+            case JOB_NAME.NOTIFY :
                 this.loggerService.info(`Notifying conference import`);
                 break;
             default :

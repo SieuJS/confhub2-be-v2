@@ -54,8 +54,8 @@ model TopicsInConferenceOrganizations {
   id String @id @default(uuid())
   conferenceOrganizationId String
   topicId String
-  belongToTopics Topics @relation(fields : [topicId], references : [id])
-  belongToConferenceOrganization ConferenceOrganizations @relation(fields : [conferenceOrganizationId], references : [id])
+  belongsToTopics Topics @relation(fields : [topicId], references : [id])
+  belongsToConferenceOrganization ConferenceOrganizations @relation(fields : [conferenceOrganizationId], references : [id])
 }
 
 model ConferenceOrganizations {
@@ -116,7 +116,7 @@ model Ranks {
   sourceId String
   conferenceRanks ConferenceRanks[]
   journalRanks JournalRanks[]
-  belongsTo Sources @relation(fields : [sourceId], references : [id])
+  belongsToSource Sources @relation(fields : [sourceId], references : [id])
 }
 
 model Sources {
@@ -130,8 +130,8 @@ model TopicsInJournals {
   id String @id @default(uuid())
   journalId String
   topicId String
-  belongToTopics Topics @relation(fields : [topicId], references : [id])
-  belongToJournals Journals @relation(fields : [journalId], references : [id])
+  belongsToTopics Topics @relation(fields : [topicId], references : [id])
+  belongsToJournals Journals @relation(fields : [journalId], references : [id])
 }
 
 model JournalRanks {
@@ -179,7 +179,7 @@ model ConferenceLikes {
   userId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  belongTo Conferences @relation(fields : [conferenceId], references : [id])
+  belongsTo Conferences @relation(fields : [conferenceId], references : [id])
   byUser Users @relation(fields : [userId], references : [id])
 }
 
@@ -189,7 +189,7 @@ model JournalLikes {
   userId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  belongTo Journals @relation(fields : [journalId], references : [id])
+  belongsTo Journals @relation(fields : [journalId], references : [id])
   byUser Users @relation(fields : [userId], references : [id])
 }
 
@@ -199,7 +199,7 @@ model JournalFollows {
   userId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  belongTo Journals @relation(fields : [journalId], references : [id])
+  belongsTo Journals @relation(fields : [journalId], references : [id])
   byUser Users @relation(fields : [userId], references : [id])
 }
 
@@ -223,7 +223,6 @@ model Users {
 
 model ConferenceCrawlJobs {
   id String @id @default(uuid())
-  title String
   conferenceId String
   status String
   progress Int
