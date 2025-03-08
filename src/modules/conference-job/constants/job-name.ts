@@ -1,4 +1,4 @@
-export enum JOB_NAME  {
+export enum CONFERENCE_CRAWL_JOB_NAME  {
     CRAWL =   "CRAWL_CONFERENCE_JOB",
     NOTIFY =   "NOTIFY_CONFERENCE_JOB",
 }

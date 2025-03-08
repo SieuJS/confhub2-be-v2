@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ConferenceService } from "../services/conference.service";
-import { ApiBody, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ConferencePaginationDTO } from "../models/conference/conference-pagination.dto";
 import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
 import {
@@ -11,6 +11,7 @@ import {
 import { RankInputDTO } from "src/modules/source-rank/models/rank-input.dto";
 import { ConferenceImportResponseDTO } from "../models/conference-response/conference-import-response.dto";
 import { ConferenceCrawlInputDTO } from "../models/conference-crawl/conference-crawl";
+import { ConferenceCrawlJobService } from '../../conference-job'
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -19,7 +20,8 @@ export class ConferenceController {
         private readonly conferenceService: ConferenceService,
         private readonly rankService: RankService,
         private readonly sourceService: SourceService,
-        private readonly fieldOfResearch: FieldOfResearchService
+        private readonly fieldOfResearch: FieldOfResearchService,
+        private readonly conferenceCrawlJobService : ConferenceCrawlJobService
     ) {}
 
     @ApiResponse({
@@ -36,8 +38,7 @@ export class ConferenceController {
     @ApiResponse({
         status: 200,
         description: "Import conferences",
-        type: ConferenceImportDTO,
-        isArray: true,
+        type : ConferenceImportResponseDTO  
     })
     @ApiBody({
         type: ConferenceImportDTO,
@@ -83,7 +84,14 @@ export class ConferenceController {
             }
         });
 
+        const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
+            conferenceId : conferenceInstance.id,
+            conferenceAcronym : conferenceImport.acronym,
+            conferenceTitle : conferenceImport.title,
+        })
+
         return {
+            crawlJobId : JobCrawlInstance.id,
             conferenceId: conferenceInstance.id,
             isExists,
         };
@@ -94,7 +102,6 @@ export class ConferenceController {
         type : ConferenceCrawlInputDTO
     })
     async crawlConferences(@Body() conferenceCrawl : ConferenceCrawlInputDTO) {
-        console.log("heelo")
+        
     }
-
 }

@@ -4,7 +4,7 @@ import { Job } from "bullmq";
 import { Injectable } from "@nestjs/common";
 import { ConferenceImportGateway } from "../gateways/conference-import.gateway";
 import { CONFERENCE_QUEUE_NAME } from "../constants/queue-name";
-import { JOB_NAME } from "../constants/job-name";
+import { CONFERENCE_CRAWL_JOB_NAME} from "../constants/job-name";
 @Injectable ()
 @Processor(CONFERENCE_QUEUE_NAME.CRAWL) 
 export class ConferenceImportProcessor extends WorkerHost {
@@ -17,11 +17,10 @@ export class ConferenceImportProcessor extends WorkerHost {
 
     async process(job : Job<any, any, string> , token : string) {
         switch(job.name) {
-            case JOB_NAME.CRAWL : 
-                this.loggerService.info(`Importing conference ${JSON.stringify(job.data)}`);
-
+            case CONFERENCE_CRAWL_JOB_NAME.CRAWL : 
+                this.handleCrawlConferenceJob(job);
                 break;
-            case JOB_NAME.NOTIFY :
+            case CONFERENCE_CRAWL_JOB_NAME.NOTIFY :
                 this.loggerService.info(`Notifying conference import`);
                 break;
             default :
@@ -32,6 +31,9 @@ export class ConferenceImportProcessor extends WorkerHost {
         return job.data;
     }
 
+    async handleCrawlConferenceJob(job : Job<any, any, string>) {
+        
+    }
 
 
 }
