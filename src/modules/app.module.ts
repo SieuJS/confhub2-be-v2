@@ -8,6 +8,7 @@ import { SourceRankModule } from './source-rank/source-rank.module';
 import { UserModule } from './user/user.module';
 import { Service } from './tokens';
 import { ConferenceJobModule } from './conference-job/conference-job.module';
+import { SocketGatewayModule } from './socket-gateway/socket-gateway.module';
 
 @Module({
     imports:
@@ -28,7 +29,8 @@ import { ConferenceJobModule } from './conference-job/conference-job.module';
         SourceRankModule,
         UserModule,
         ConferenceJobModule,
-        ConferencesModule
+        ConferencesModule,
+        SocketGatewayModule
     ]
 })
 export class ApplicationModule {

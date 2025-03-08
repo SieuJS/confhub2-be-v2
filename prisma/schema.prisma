@@ -22,24 +22,23 @@ model Locations{
   cityStateProvince String?
   country String?
   continent String?
-  location String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isAvailable Boolean
-  conferenceId String
-  belongsTo ConferenceOrganizations @relation(fields : [conferenceId], references : [id])
+  organizeId String
+  belongsTo ConferenceOrganizations @relation(fields : [organizeId], references : [id])
 }
 
 model ConferenceDates {
   id String @id @default(uuid())
-  organizationId String
+  organizedId String
   fromDate DateTime
   toDate DateTime
   type String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isAvailable Boolean
-  belongsTo ConferenceOrganizations @relation(fields : [organizationId], references : [id])
+  belongsTo ConferenceOrganizations @relation(fields : [organizedId], references : [id])
 }
 
 model Topics {

@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from '../../common'
-import { ConferenceAttribute, ConferenceMessageJob } from "../constants/conference-attribute";
+import { ConferenceAttribute, ConferenceMessageJob } from "../../../constants/conference-attribute";
 import { ConferenceCrawlJobInputDTO } from "../models/conference-crawl-job/conference-crawl-job-input.dto";
 import { InjectQueue } from "@nestjs/bullmq";
-import { CONFERENCE_QUEUE_NAME } from "../constants/queue-name";
+import { CONFERENCE_QUEUE_NAME } from "../../../constants/queue-name";
 import { Queue } from "bullmq";
-import { CONFERENCE_CRAWL_JOB_NAME } from "../constants/job-name";
+import { CONFERENCE_CRAWL_JOB_NAME } from "../../../constants/job-name";
 import { ConferenceCrawlJobDTO } from "../models/conference-crawl-job/conference-crawl-job.dto";
 import { HttpService } from "@nestjs/axios";
 import { catchError, firstValueFrom } from "rxjs";

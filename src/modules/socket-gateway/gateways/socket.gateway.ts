@@ -7,7 +7,7 @@ import { randomUUID } from 'crypto';
         origin: '*',
     },
 })
-export class ConferenceImportGateway {
+export class SocketGateway {
     @WebSocketServer()
     server: Server;
 
@@ -41,4 +41,4 @@ export class ConferenceImportGateway {
     handleDisconnect(client: Socket) {
         console.log(`Client disconnected: ${client.id}`);
     }
-}
+} 

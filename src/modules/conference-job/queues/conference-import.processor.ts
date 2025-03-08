@@ -2,9 +2,8 @@ import { Processor, WorkerHost } from "@nestjs/bullmq";
 import { LoggerService } from "../../common";
 import { Job } from "bullmq";
 import { Injectable } from "@nestjs/common";
-import { ConferenceImportGateway } from "../gateways/conference-import.gateway";
-import { CONFERENCE_QUEUE_NAME } from "../constants/queue-name";
-import { CONFERENCE_CRAWL_JOB_NAME} from "../constants/job-name";
+import { CONFERENCE_QUEUE_NAME } from "../../../constants/queue-name";
+import { CONFERENCE_CRAWL_JOB_NAME} from "../../../constants/job-name";
 @Injectable ()
 @Processor(CONFERENCE_QUEUE_NAME.CRAWL) 
 export class ConferenceImportProcessor extends WorkerHost {
