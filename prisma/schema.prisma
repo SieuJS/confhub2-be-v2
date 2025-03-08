@@ -19,9 +19,8 @@ model Passenger {
 model Locations{
   id String @id @default(uuid())
   address String?
-  city String?
+  cityStateProvince String?
   country String?
-  state String?
   continent String?
   location String?
   createdAt DateTime @default(now())
