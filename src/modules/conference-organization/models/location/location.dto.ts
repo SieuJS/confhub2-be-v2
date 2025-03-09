@@ -44,5 +44,11 @@ export class LocationDTO {
     })
     isAvailable : boolean
 
+    @ApiProperty({
+        description : "Organization id",
+        example : "234234-234234-234234"
+    })
+    organizeId : string
+
     
 }
