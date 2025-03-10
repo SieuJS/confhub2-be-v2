@@ -42,7 +42,6 @@ export class ConferenceCrawlJobService {
             crawlJobId : jobInstance.id,
             conferenceAcronym : input.conferenceAcronym,
             conferenceTitle : input.conferenceTitle
-
         })
 
         return {
@@ -61,7 +60,7 @@ export class ConferenceCrawlJobService {
 
     async fetchConferenceCrawlData(input : ConferenceCrawlNewRequestDto) : Promise<ConferenceCrawlNewResponseDto> {
         const { data } : {data : ConferenceCrawlNewResponseDto} = await firstValueFrom(
-            this.httpService.post("http://172.188.242.233:3000/crawl-conferences", 
+            this.httpService.post("http://localhost:3001/crawl-conferences", 
             [
                 {
                     ...input
@@ -81,5 +80,6 @@ export class ConferenceCrawlJobService {
         console.log(data.message)
         return data
     }
+
 
 }

@@ -6,13 +6,14 @@ import { ConferenceCrawlJobService } from './services/conference-crawl-job.servi
 import { ConferenceCrawlJobController } from './controllers/conference-crawl-job.controller';
 import { ConferenceImportProcessor } from './queues/conference-import.processor';
 import { HttpModule } from '@nestjs/axios';
+import { ConferenceOrganizationModule } from '../conference-organization';
 
 @Module({
     imports: [CommonModule, 
         BullModule.registerQueue({
             name : CONFERENCE_QUEUE_NAME.CRAWL
         }),
-        HttpModule,
+        HttpModule, ConferenceOrganizationModule
     ],
     providers: [
         ConferenceCrawlJobService , ConferenceImportProcessor

@@ -60,7 +60,13 @@ export class ConferenceService {
         }
 
         return await this.prismaService.conferences.create({
-            data: conference,
+            data: {
+                title: conference.title,
+                acronym: conference.acronym,
+                creatorId: conference.creatorId,
+                createdAt: new Date(),
+                updatedAt: new Date
+            }
         });
     }
 

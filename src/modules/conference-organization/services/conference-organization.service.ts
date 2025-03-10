@@ -39,7 +39,7 @@ export class ConferenceOrganizationSerivce {
         return date;
     }
 
-    async importOrganize(input : any) : Promise<OrganizedDTO> {
+    async importOrganize(input : OrganizedInput) : Promise<OrganizedDTO> {
         const organize = await this.prismaService.conferenceOrganizations.create({
             data : {
                 year    : input.year,
