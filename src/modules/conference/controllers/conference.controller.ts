@@ -12,6 +12,8 @@ import { RankInputDTO } from "src/modules/source-rank/models/rank-input.dto";
 import { ConferenceImportResponseDTO } from "../models/conference-response/conference-import-response.dto";
 import { ConferenceCrawlInputDTO } from "../models/conference-crawl/conference-crawl";
 import { ConferenceCrawlJobService } from '../../conference-job'
+import { ConferenceOrganizationSerivce } from "../../conference-organization";
+import { ConferenceDTO } from "../models/conference/conference.dto";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -21,18 +23,57 @@ export class ConferenceController {
         private readonly rankService: RankService,
         private readonly sourceService: SourceService,
         private readonly fieldOfResearch: FieldOfResearchService,
-        private readonly conferenceCrawlJobService : ConferenceCrawlJobService
+        private readonly conferenceCrawlJobService : ConferenceCrawlJobService,
+        private readonly conferenceOrganizationService : ConferenceOrganizationSerivce,
     ) {}
 
     @ApiResponse({
         status: 200,
         description: "Get all conferences",
-        type: ConferencePaginationDTO,
+        type: ConferenceDTO,
         isArray: true,
     })
     @Get()
     async getConferences() {
-        return await this.conferenceService.getConferences();
+        const conferences =  await this.conferenceService.getConferences();
+        const conferenceToResponse : ConferenceDTO[] = await Promise.all(conferences.map( async conference => {
+            const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
+            const locations = await this.conferenceOrganizationService.getLocationsByOrganizedId(organization.id);
+            const dates = await this.conferenceOrganizationService.getDatesByOrganizedId(organization.id);
+            const conferenceDTO : ConferenceDTO = {
+                id : conference.id,
+                title : conference.title,
+                acronym : conference.acronym,
+                location : {
+                    cityStateProvince : locations[0].cityStateProvince,
+                    country : locations[0].country,
+                    address : locations[0].address,
+                    continent : locations[0].continent,
+                },
+                rank : conference.ranks[0].byRank.belongsToSource.name,
+                source : conference.ranks[0].byRank.belongsToSource.name,
+                year : conference.ranks[0].year,
+                fieldOfResearchCodes : conference.ranks.map(rank => rank.fieldOfResearchId),
+                topics : organization.topics,
+                dates : dates.map(date => {
+                    return {
+                        name : date.name,
+                        type : date.type,
+                        fromDate : date.fromDate,
+                        toDate : date.toDate,
+                    }
+                }
+                ),
+                link : organization.link,
+                createdAt : conference.createdAt,
+                updatedAt : conference.updatedAt,
+                creatorId : conference.creatorId
+
+            }
+            return conferenceDTO;
+        }))
+
+        return conferenceToResponse;
     }
 
     @ApiResponse({

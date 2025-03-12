@@ -53,23 +53,60 @@ export class ConferenceOrganizationSerivce {
                 summerize : input.summerize,
                 callForPaper : input.callForPaper,
                 conferenceId : input.conferenceId,
-                topics : input.topics
-                
+                topics : input.topics,
             }
         })
         return organize;
     }
 
-    async getOrganizationsByConferenceId(conferenceId : string) {
-        return this.prismaService.conferenceOrganizations.findMany({
+    async getFirstOrganizationsByConferenceId(conferenceId : string) {
+        return this.prismaService.conferenceOrganizations.findFirst({
             where : {
                 isAvailable : true,
                 conferenceId
             },
             orderBy : {
-                
+                updatedAt : 'desc'
             }
         });
+    }
+
+    async getLocationsByOrganizedId(organizedId : string) {
+        return this.prismaService.locations.findMany({
+            where : {
+                isAvailable : true,
+                organizeId : organizedId
+            },
+            orderBy : {
+                updatedAt : 'desc'
+            }
+        })
+    }
+
+    async getConferenceDatesByOrganizedId(organizedId : string) {
+        return this.prismaService.conferenceDates.findMany({
+            where : {
+                isAvailable : true,
+                organizedId,
+                type : 'conferenceDates'
+            },
+            orderBy : {
+                updatedAt : 'desc'
+            }
+        })  
+    }
+
+    async getDatesByOrganizedId(organizedId : string) {
+        return this.prismaService.conferenceDates.findMany({
+            where : {
+                isAvailable : true,
+                organizedId
+            },
+            orderBy : {
+                updatedAt : 'desc'
+            },
+
+        })
     }
 
 

@@ -26,7 +26,7 @@ export class ConferenceService {
                 },
             },
         });
-        return this.paginationService.paginate(consferences, 1, 10);
+        return consferences;
     }
 
     async getConferenceById(id: string) {
