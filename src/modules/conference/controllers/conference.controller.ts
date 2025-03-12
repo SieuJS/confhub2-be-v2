@@ -14,6 +14,7 @@ import { ConferenceCrawlInputDTO } from "../models/conference-crawl/conference-c
 import { ConferenceCrawlJobService } from '../../conference-job'
 import { ConferenceOrganizationSerivce } from "../../conference-organization";
 import { ConferenceDTO } from "../models/conference/conference.dto";
+import { ConferenceAttribute } from "../../../constants/conference-attribute";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -129,6 +130,9 @@ export class ConferenceController {
             conferenceId : conferenceInstance.id,
             conferenceAcronym : conferenceImport.acronym,
             conferenceTitle : conferenceImport.title,
+            status : ConferenceAttribute.JOB_STATUS_PENDING,
+            progress : 0,
+            message : 'pending'
         })
 
         return {

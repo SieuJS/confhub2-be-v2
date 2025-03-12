@@ -15,7 +15,7 @@ import { SocketGatewayModule } from './socket-gateway/socket-gateway.module';
     
     [
         CommonModule,
-        BullModule.forRootAsync({
+        BullModule.forRootAsync( {
             imports : [CommonModule],
             inject: [Service.CONFIG],
             useFactory : async (config : Config) => ({

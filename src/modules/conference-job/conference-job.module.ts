@@ -7,6 +7,7 @@ import { ConferenceCrawlJobController } from './controllers/conference-crawl-job
 import { ConferenceImportProcessor } from './queues/conference-import.processor';
 import { HttpModule } from '@nestjs/axios';
 import { ConferenceOrganizationModule } from '../conference-organization';
+import { ConferenceImportListener } from './queues/conference-import.listener';
 
 @Module({
     imports: [CommonModule, 

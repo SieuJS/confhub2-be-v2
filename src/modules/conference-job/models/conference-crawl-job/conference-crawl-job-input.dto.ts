@@ -4,7 +4,10 @@ import { ConferenceCrawlJobDTO } from "./conference-crawl-job.dto";
 export class ConferenceCrawlJobInputDTO extends PickType(ConferenceCrawlJobDTO, [
     'conferenceId',
     'conferenceTitle' , 
-    'conferenceAcronym'
+    'conferenceAcronym',
+    'status',
+    'progress',
+    'message',
 ]) {
     
 }

@@ -42,7 +42,9 @@ export class ConferenceCrawlJobService {
             crawlJobId : jobInstance.id,
             conferenceId : jobInstance.conferenceId,
             conferenceAcronym : input.conferenceAcronym,
-            conferenceTitle : input.conferenceTitle
+            conferenceTitle : input.conferenceTitle,
+            progress : 0,
+            status : ConferenceAttribute.JOB_STATUS_PENDING
         })
 
         return {

@@ -45,7 +45,14 @@ export class ConferenceImportProcessor extends WorkerHost {
             }
         );
         
+        if(crawlDataResponse.data.length === 0) {
+            this.loggerService.error(`No data found for ${job.data.conferenceTitle}`);
+            return;
+        }
 
+        job.data.progress = 40;
+        job.data.message = 'Crawl data success, importing data'
+        await job.updateProgress(40);
 
         const crawlData = crawlDataResponse.data[0];
 
@@ -61,6 +68,10 @@ export class ConferenceImportProcessor extends WorkerHost {
             topics : crawlData.topics.split(','),
             isAvailable : true
         })
+
+        job.data.progress = 60;
+        job.data.message = 'Imported conference data, importing location data'
+        await job.updateProgress(60);
 
         const locationData = await this.conferenceOrganizationService.importPlace({
             continent : crawlData.continent,
@@ -90,12 +101,16 @@ export class ConferenceImportProcessor extends WorkerHost {
             ...otherDateInput
         ]
 
+
         for(const date of dateInput) {
             await this.conferenceOrganizationService.importDate(date);
         }
 
-        this.loggerService.info(`Imported conference data ${job.data.conferenceTitle}`);
+        job.data.progress = 100;
+        job.data.message = 'Imported conference data'
+        await job.updateProgress(100);
 
+        this.loggerService.info(`Imported conference data ${job.data.conferenceTitle}`);
     }
 
 
