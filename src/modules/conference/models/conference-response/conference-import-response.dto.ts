@@ -27,4 +27,12 @@ export class ConferenceImportResponseDTO {
         }
     ) 
     isExists : boolean
+
+    @ApiProperty(
+        {
+            description : "Channel socket",
+            example : "conference",
+        }
+    )
+    channel : string
 }

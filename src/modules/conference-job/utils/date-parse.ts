@@ -23,7 +23,6 @@ export function parseDateRange(dateRange: string): [Date, Date] {
   let lastDate = parser.fromString(lastPart);
   
   if(! lastDate.isValid()) {
-    console.log("field last")
     lastPart = firstPart.split(' ')[0] + lastPart
     lastDate = parser.fromString(lastPart)
   }

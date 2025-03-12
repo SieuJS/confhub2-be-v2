@@ -15,6 +15,7 @@ import { ConferenceCrawlJobService } from '../../conference-job'
 import { ConferenceOrganizationSerivce } from "../../conference-organization";
 import { ConferenceDTO } from "../models/conference/conference.dto";
 import { ConferenceAttribute } from "../../../constants/conference-attribute";
+import { PaginationService } from "../../common/services/pagination.service";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -26,19 +27,22 @@ export class ConferenceController {
         private readonly fieldOfResearch: FieldOfResearchService,
         private readonly conferenceCrawlJobService : ConferenceCrawlJobService,
         private readonly conferenceOrganizationService : ConferenceOrganizationSerivce,
+        private readonly paginationService : PaginationService<ConferenceDTO>
     ) {}
 
     @ApiResponse({
         status: 200,
         description: "Get all conferences",
-        type: ConferenceDTO,
-        isArray: true,
+        type: ConferencePaginationDTO,
     })
     @Get()
     async getConferences() {
         const conferences =  await this.conferenceService.getConferences();
         const conferenceToResponse : ConferenceDTO[] = await Promise.all(conferences.map( async conference => {
             const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
+            if(!organization) {
+                return undefined;
+            }
             const locations = await this.conferenceOrganizationService.getLocationsByOrganizedId(organization.id);
             const dates = await this.conferenceOrganizationService.getDatesByOrganizedId(organization.id);
             const conferenceDTO : ConferenceDTO = {
@@ -51,7 +55,7 @@ export class ConferenceController {
                     address : locations[0].address,
                     continent : locations[0].continent,
                 },
-                rank : conference.ranks[0].byRank.belongsToSource.name,
+                rank : conference.ranks[0].byRank.name,
                 source : conference.ranks[0].byRank.belongsToSource.name,
                 year : conference.ranks[0].year,
                 fieldOfResearchCodes : conference.ranks.map(rank => rank.fieldOfResearchId),
@@ -73,8 +77,7 @@ export class ConferenceController {
             }
             return conferenceDTO;
         }))
-
-        return conferenceToResponse;
+        return this.paginationService.paginate(conferenceToResponse);
     }
 
     @ApiResponse({
@@ -139,6 +142,7 @@ export class ConferenceController {
             crawlJobId : JobCrawlInstance.id,
             conferenceId: conferenceInstance.id,
             isExists,
+            channel : "cfp-crawl-"+JobCrawlInstance.id
         };
     }
 

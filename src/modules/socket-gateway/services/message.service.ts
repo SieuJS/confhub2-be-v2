@@ -1,5 +1,7 @@
+import { Injectable } from "@nestjs/common";
 import { SocketGateway } from "../gateways/socket.gateway";
 
+@Injectable()
 export class MessageService {
     constructor(
         private readonly socketGateway : SocketGateway

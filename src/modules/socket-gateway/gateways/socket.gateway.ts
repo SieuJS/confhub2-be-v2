@@ -1,12 +1,14 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { randomUUID } from 'crypto';
+import { Injectable } from '@nestjs/common';
 
 @WebSocketGateway({
     cors: {
         origin: '*',
     },
 })
+@Injectable()
 export class SocketGateway {
     @WebSocketServer()
     server: Server;

@@ -8,13 +8,14 @@ import { ConferenceImportProcessor } from './queues/conference-import.processor'
 import { HttpModule } from '@nestjs/axios';
 import { ConferenceOrganizationModule } from '../conference-organization';
 import { ConferenceImportListener } from './queues/conference-import.listener';
+import { SocketGatewayModule } from '../socket-gateway/socket-gateway.module';
 
 @Module({
     imports: [CommonModule, 
         BullModule.registerQueue({
             name : CONFERENCE_QUEUE_NAME.CRAWL
         }),
-        HttpModule, ConferenceOrganizationModule
+        HttpModule, ConferenceOrganizationModule, SocketGatewayModule
     ],
     providers: [
         ConferenceCrawlJobService , ConferenceImportProcessor

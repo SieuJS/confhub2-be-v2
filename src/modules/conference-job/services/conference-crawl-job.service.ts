@@ -39,7 +39,7 @@ export class ConferenceCrawlJobService {
         })
 
         await this.conferenceCrawlQueue.add(CONFERENCE_CRAWL_JOB_NAME.CRAWL, {
-            crawlJobId : jobInstance.id,
+            id : jobInstance.id,
             conferenceId : jobInstance.conferenceId,
             conferenceAcronym : input.conferenceAcronym,
             conferenceTitle : input.conferenceTitle,
@@ -81,5 +81,14 @@ export class ConferenceCrawlJobService {
             )
         );
         return data
+    }
+
+    async updateConferenceCrawlJob (jobId : string, data : Partial<ConferenceCrawlJobInputDTO>) {
+        return this.prismaService.conferenceCrawlJobs.update({
+            where : {
+                id : jobId
+            },
+            data
+        })
     }
 }
