@@ -58,7 +58,18 @@ export class ConferenceOrganizationSerivce {
             }
         })
         return organize;
+    }
 
+    async getOrganizationsByConferenceId(conferenceId : string) {
+        return this.prismaService.conferenceOrganizations.findMany({
+            where : {
+                isAvailable : true,
+                conferenceId
+            },
+            orderBy : {
+                
+            }
+        });
     }
 
 
