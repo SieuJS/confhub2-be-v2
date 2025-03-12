@@ -1,18 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-class SubmissionDate {
-    @ApiProperty({ example: 'June 5, 2024' })
-    'Abstracts due': string;
-
-    @ApiProperty({ example: 'June 12, 2024' })
-    'Full papers due': string;
-}
-
-class NotificationDate {
-    @ApiProperty({ example: 'July 31, 2024' })
-    'Notifications': string;
-}
-
 class ConferenceData {
     @ApiProperty({ example: 'AAAI Conference on Human Computation and Crowdsourcing' })
     name: string;
@@ -74,11 +61,11 @@ class ConferenceData {
     @ApiProperty({ example: 'Offline' })
     type: string;
 
-    @ApiProperty({ type: SubmissionDate })
-    submissionDate: SubmissionDate;
+    @ApiProperty({ type: Object })
+    submissionDate: object;
 
-    @ApiProperty({ type: NotificationDate })
-    notificationDate: NotificationDate;
+    @ApiProperty({ type: Object })
+    notificationDate: object;
 
     @ApiProperty({ example: {} })
     cameraReadyDate: object;

@@ -1,11 +1,13 @@
-import { PrismaService } from "src/modules/common";
+import { PrismaService } from "../../common";
 import { LocationInput } from "../models/location/location.input";
 import { LocationDTO } from "../models/location/location.dto";
 import { ConferenceDateInput } from "../models/date/conferencer-date.input";
 import { ConferenceDateDTO } from "../models/date/conference-date.dto";
 import { OrganizedInput } from "../models/organize/organized.input";
 import { OrganizedDTO } from "../models/organize/organized.dto";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class ConferenceOrganizationSerivce {
     constructor (
         private prismaService : PrismaService

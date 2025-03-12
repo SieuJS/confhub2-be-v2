@@ -40,6 +40,7 @@ export class ConferenceCrawlJobService {
 
         await this.conferenceCrawlQueue.add(CONFERENCE_CRAWL_JOB_NAME.CRAWL, {
             crawlJobId : jobInstance.id,
+            conferenceId : jobInstance.conferenceId,
             conferenceAcronym : input.conferenceAcronym,
             conferenceTitle : input.conferenceTitle
         })
@@ -77,9 +78,6 @@ export class ConferenceCrawlJobService {
                 })
             )
         );
-        console.log(data.message)
         return data
     }
-
-
 }

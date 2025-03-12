@@ -7,6 +7,8 @@ import { CONFERENCE_CRAWL_JOB_NAME} from "../../../constants/job-name";
 import { ConferenceCrawlJobService } from "../services";
 import { ConferenceCrawlJobInputDTO } from "../models/conference-crawl-job/conference-crawl-job-input.dto";
 import { ConferenceOrganizationSerivce } from "../../conference-organization";
+import { ConferenceDateInput } from "src/modules/conference-organization/models/date/conferencer-date.input";
+import { parseDateRange} from "../utils/date-parse";
 @Injectable ()
 @Processor(CONFERENCE_QUEUE_NAME.CRAWL) 
 export class ConferenceImportProcessor extends WorkerHost {
@@ -36,16 +38,93 @@ export class ConferenceImportProcessor extends WorkerHost {
     }
 
     async handleCrawlConferenceJob(job : Job<ConferenceCrawlJobInputDTO, any, string>) {
-        const crawlData = await this.conferenceCrawlJobService.fetchConferenceCrawlData(
+        const crawlDataResponse = await this.conferenceCrawlJobService.fetchConferenceCrawlData(
             {
                 Title: job.data.conferenceTitle,
                 Acronym: job.data.conferenceAcronym,
             }
         );
+        
 
-        console.log(crawlData);
+
+        const crawlData = crawlDataResponse.data[0];
+
+        const organizeData = await this.conferenceOrganizationService.importOrganize({
+            year : parseInt(crawlData.year),
+            accessType : crawlData.type,
+            link : crawlData.link,
+            impLink : crawlData.impLink,
+            cfpLink : crawlData.cfpLink,
+            summerize : crawlData.summary,
+            callForPaper : crawlData.callForPapers,
+            conferenceId : job.data.conferenceId,
+            topics : crawlData.topics.split(','),
+            isAvailable : true
+        })
+
+        const locationData = await this.conferenceOrganizationService.importPlace({
+            continent : crawlData.continent,
+            country : crawlData.country,
+            cityStateProvince : crawlData.cityStateProvince,
+            address : crawlData.location,
+            organizeId : organizeData.id,
+        })
+
+        const {submissionDate, cameraReadyDate, 
+            conferenceDates, registrationDate, 
+            notificationDate, otherDate} = crawlData;
+
+        const conferenceDateInput = converStringToDate(conferenceDates, 'conferenceDates', organizeData.id);
+        const submissionDateInput = convertObjectToDate(submissionDate, 'submissionDate', organizeData.id);
+        const cameraReadyDateInput = convertObjectToDate(cameraReadyDate, 'cameraReadyDate', organizeData.id);
+        const registrationDateInput = convertObjectToDate(registrationDate, 'registrationDate', organizeData.id);
+        const notificationDateInput = convertObjectToDate(notificationDate, 'notificationDate', organizeData.id);
+        const otherDateInput = convertObjectToDate(otherDate, 'otherDate', organizeData.id);
+
+        const dateInput = [
+            ...conferenceDateInput,
+            ...submissionDateInput, 
+            ...cameraReadyDateInput,
+            ...registrationDateInput,
+            ...notificationDateInput,
+            ...otherDateInput
+        ]
+
+        for(const date of dateInput) {
+            await this.conferenceOrganizationService.importDate(date);
+        }
+
+        this.loggerService.info(`Imported conference data ${job.data.conferenceTitle}`);
 
     }
 
 
+}
+
+const convertObjectToDate = (date : object, type : string, organizedId) : ConferenceDateInput[]=> {
+    const result : ConferenceDateInput[] = [];
+    for(const key in date) {
+        const [fromDate, toDate] = parseDateRange(date[key]);
+        result.push({
+            fromDate ,
+            toDate  ,
+            type  ,
+            name : key,
+            organizedId
+        })
+    }
+    return result;
+}
+
+const converStringToDate = (date : string, type : string, organizedId) : ConferenceDateInput[] => {
+    const [fromDate, toDate] = parseDateRange(date);
+    return [
+        {
+            fromDate,
+            toDate,
+            type,
+            name : type,
+            organizedId
+        }
+    ]
 }
