@@ -17,6 +17,7 @@ import { ConferenceDTO } from "../models/conference/conference.dto";
 import { ConferenceAttribute } from "../../../constants/conference-attribute";
 import { PaginationService } from "../../common/services/pagination.service";
 import { GetConferencesParams } from "../models/conference-request/get-conference-params";
+import { AdminService } from "../../user/services/admin.service";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -28,7 +29,8 @@ export class ConferenceController {
         private readonly fieldOfResearch: FieldOfResearchService,
         private readonly conferenceCrawlJobService : ConferenceCrawlJobService,
         private readonly conferenceOrganizationService : ConferenceOrganizationSerivce,
-        private readonly paginationService : PaginationService<ConferenceDTO>
+        private readonly paginationService : PaginationService<ConferenceDTO>,
+        private readonly adminService : AdminService
     ) {}
 
     @ApiParam({
@@ -43,7 +45,6 @@ export class ConferenceController {
     })
     @Get()
     async getConferences(@Param() params: GetConferencesParams) {
-        console.log(params)
         const conferences =  await this.conferenceService.getConferences(params);
         const conferenceToResponse : ConferenceDTO[] = await Promise.all(conferences.map( async conference => {
             const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
@@ -98,6 +99,8 @@ export class ConferenceController {
     @Post("import")
     async importConferences(@Body() conferenceImport: ConferenceImportDTO) : Promise<ConferenceImportResponseDTO> {
         let isExists = true;
+        const user = await this.adminService.getAdmin();
+        conferenceImport.creatorId = user.id;
         let conferenceInstance =
             await this.conferenceService.getConferenceByAcronymAndTitle(
                 conferenceImport.title,

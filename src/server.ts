@@ -54,7 +54,8 @@ async function bootstrap(): Promise<void> {
 
     const app = await NestFactory.create<NestFastifyApplication>(
         ApplicationModule,
-        new FastifyAdapter()
+        new FastifyAdapter(),
+        {cors: true}
     );
 
     // @todo Enable Helmet for better API security headers

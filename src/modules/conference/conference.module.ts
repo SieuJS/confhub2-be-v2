@@ -6,9 +6,10 @@ import { ConferenceDtoToModelPipe } from './pipes/conference-dto-to-model.pipe';
 import { SourceRankModule } from '../source-rank/source-rank.module';
 import { ConferenceJobModule } from '../conference-job/conference-job.module';
 import { ConferenceOrganizationModule } from '../conference-organization';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports : [CommonModule, SourceRankModule, ConferenceJobModule, ConferenceOrganizationModule ],
+  imports : [CommonModule, SourceRankModule, ConferenceJobModule, ConferenceOrganizationModule, UserModule ],
   providers: [ ConferenceService, ConferenceDtoToModelPipe],
   controllers: [ConferenceController],
 })
