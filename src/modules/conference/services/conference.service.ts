@@ -13,7 +13,7 @@ export class ConferenceService {
         private readonly paginationService: PaginationService<any>
     ) {}
 
-    async getConferences(ConferenceFilter? : ConferenceFilter ) {
+    async getConferences(conferenceFilter? : ConferenceFilter ) {
 
         const include = { 
             ranks: {
@@ -32,30 +32,78 @@ export class ConferenceService {
             },
         }
 
-        if(!ConferenceFilter) {
+        if(!conferenceFilter) {
             return await this.prismaService.conferences.findMany({
                 include
             });
-            
+
         }
 
         const consferences = await this.prismaService.conferences.findMany({
-            include: {
-                ranks: {
-                    include: {
-                        byRank: {
-                            include: {
-                                belongsToSource: true,
+            include , 
+            where : {
+                title : {
+                    contains : conferenceFilter.title || "",
+                    mode : "insensitive"
+                },
+                acronym : {
+                    contains : conferenceFilter.acronym || "",
+                    mode : "insensitive"
+                },
+                ranks : {
+                    some : {
+                        byRank : {
+                            name : {
+                                contains : conferenceFilter.rank || "",
+                                mode : "insensitive"
                             },
-                        },
-                        inFieldOfResearch  : {
-                            select : {
-                                name : true
+                            belongsToSource : {
+                                name : {
+                                    contains : conferenceFilter.source || "",
+                                    mode : "insensitive"
+                                }
                             }
                         }
-                    },
+                    }
                 },
-            },
+                organizations : {
+                    some : {
+                        topics : {
+                            hasSome : conferenceFilter.topics || []
+                        },
+                        locations : {
+                            some : {
+                                cityStateProvince : {
+                                    contains : conferenceFilter.cityStateProvince || "",
+                                    mode : "insensitive"
+                                },
+                                country : {
+                                    contains : conferenceFilter.country || "", 
+                                    mode : "insensitive"
+                                },
+                                continent : {
+                                    contains : conferenceFilter.continent || "",
+                                    mode : "insensitive"
+                                },
+                                address : {
+                                    contains : conferenceFilter.address || "",
+                                    mode : "insensitive"
+                                }
+                            }
+                        },
+                        conferenceDates : {
+                            some : {
+                                ...( conferenceFilter.fromDate ? {fromDate : {
+                                    gte : conferenceFilter.fromDate
+                                }} : {})    ,
+                                ...( conferenceFilter.toDate ?  {toDate : {
+                                    lte : conferenceFilter.toDate 
+                                }} : {}) 
+                            }
+                        }
+                    }
+                }
+            }
         });
         return consferences;
     }

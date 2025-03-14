@@ -3,19 +3,27 @@ import { ApiProperty, PartialType } from "@nestjs/swagger";
 export class ConferenceFilter {
     @ApiProperty({
         description : "The conference name",
-        required : false
+        required : false,
+        default : ""
     })
     title? : string; 
 
     @ApiProperty({
+        description : "The conference acronym",
+        required : false,
+        default : ""
+    })
+    acronym? : string;
+
+    @ApiProperty({
         description : "The conference start date",
-        required : false
+        required : false,
     })
     fromDate? : Date;
 
     @ApiProperty({
         description : "The conference end date",
-        required : false
+        required : false,
     })
     toDate? : Date;
 
@@ -62,4 +70,10 @@ export class ConferenceFilter {
         required : false
     })
     rank? : string; 
+
+    @ApiProperty({
+        description : "The conference source",
+        required : false
+    })
+    source? : string;
 }

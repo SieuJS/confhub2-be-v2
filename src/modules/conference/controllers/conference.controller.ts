@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ConferenceService } from "../services/conference.service";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ConferencePaginationDTO } from "../models/conference/conference-pagination.dto";
 import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
 import {
@@ -16,6 +16,7 @@ import { ConferenceOrganizationSerivce } from "../../conference-organization";
 import { ConferenceDTO } from "../models/conference/conference.dto";
 import { ConferenceAttribute } from "../../../constants/conference-attribute";
 import { PaginationService } from "../../common/services/pagination.service";
+import { GetConferencesParams } from "../models/conference-request/get-conference-params";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -30,14 +31,19 @@ export class ConferenceController {
         private readonly paginationService : PaginationService<ConferenceDTO>
     ) {}
 
+    @ApiParam({
+        name: "params",
+        required: false,
+        type: GetConferencesParams,
+    })
     @ApiResponse({
         status: 200,
         description: "Get all conferences",
         type: ConferencePaginationDTO,
     })
     @Get()
-    async getConferences() {
-        const conferences =  await this.conferenceService.getConferences();
+    async getConferences(@Param() params: GetConferencesParams) {
+        const conferences =  await this.conferenceService.getConferences(params);
         const conferenceToResponse : ConferenceDTO[] = await Promise.all(conferences.map( async conference => {
             const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
             if(!organization) {
