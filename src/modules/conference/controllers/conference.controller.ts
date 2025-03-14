@@ -83,7 +83,7 @@ export class ConferenceController {
             }
             return conferenceDTO;
         }))
-        return this.paginationService.paginate(conferenceToResponse);
+        return this.paginationService.paginate(conferenceToResponse, params.curPage, params.perPage);
     }
 
     @ApiResponse({
