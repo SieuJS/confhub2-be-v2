@@ -53,16 +53,16 @@ export class ConferenceService {
                 ranks : {
                     some : {
                         byRank : {
-                            name : {
+                            ...(conferenceFilter.rank ? {name : {
                                 contains : conferenceFilter.rank || "",
                                 mode : "insensitive"
-                            },
-                            belongsToSource : {
+                            }} : {}),
+                            ...(conferenceFilter.source ?  {belongsToSource : {
                                 name : {
                                     contains : conferenceFilter.source || "",
                                     mode : "insensitive"
                                 }
-                            }
+                            }} : {})
                         }
                     }
                 },
