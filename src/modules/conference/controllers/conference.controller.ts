@@ -58,7 +58,7 @@ export class ConferenceController {
                 rank : conference.ranks[0].byRank.name,
                 source : conference.ranks[0].byRank.belongsToSource.name,
                 year : conference.ranks[0].year,
-                fieldOfResearchCodes : conference.ranks.map(rank => rank.fieldOfResearchId),
+               researchFields: conference.ranks.map(rank => rank.inFieldOfResearch.name),
                 topics : organization.topics,
                 dates : dates.map(date => {
                     return {

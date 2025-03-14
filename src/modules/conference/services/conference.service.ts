@@ -4,6 +4,7 @@ import { ConferenceImportDTO } from "../models/conference/conference-import.dto"
 import { RankDTO } from "../../source-rank/models/rank.dto";
 import { ConferenceQueryDto } from "../models/conference/conference-query.dto";
 import { PaginationService } from "../../common/services/pagination.service";
+import { ConferenceFilter } from "../models/conference-filter/conference.filter";
 
 @Injectable()
 export class ConferenceService {
@@ -12,7 +13,32 @@ export class ConferenceService {
         private readonly paginationService: PaginationService<any>
     ) {}
 
-    async getConferences() {
+    async getConferences(ConferenceFilter? : ConferenceFilter ) {
+
+        const include = { 
+            ranks: {
+                include: {
+                    byRank: {
+                        include: {
+                            belongsToSource: true,
+                        },
+                    },
+                    inFieldOfResearch  : {
+                        select : {
+                            name : true
+                        }
+                    }
+                },
+            },
+        }
+
+        if(!ConferenceFilter) {
+            return await this.prismaService.conferences.findMany({
+                include
+            });
+            
+        }
+
         const consferences = await this.prismaService.conferences.findMany({
             include: {
                 ranks: {
@@ -22,6 +48,11 @@ export class ConferenceService {
                                 belongsToSource: true,
                             },
                         },
+                        inFieldOfResearch  : {
+                            select : {
+                                name : true
+                            }
+                        }
                     },
                 },
             },

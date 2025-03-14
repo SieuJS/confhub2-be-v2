@@ -31,7 +31,7 @@ export class ConferenceDTO {
     year: number
 
     @ApiProperty({description : 'Field of conference', example : ['4601', '4602'] , isArray : true})
-    fieldOfResearchCodes: string[]
+    researchFields: string[]
 
     @ApiProperty({description : 'Topics of conference', example : 'Artificial Intelligence'})
     topics: string[]

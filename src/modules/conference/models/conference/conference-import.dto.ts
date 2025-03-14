@@ -1,4 +1,4 @@
-import { PickType } from "@nestjs/swagger";
+import { ApiProperty, PickType } from "@nestjs/swagger";
 import { ConferenceDTO } from "./conference.dto";
 
 export class ConferenceImportDTO extends PickType(ConferenceDTO, [
@@ -8,8 +8,11 @@ export class ConferenceImportDTO extends PickType(ConferenceDTO, [
     'source' , 
     'rank',
     'year',
-    'fieldOfResearchCodes',
     'creatorId',
 ]) {
-
+    @ApiProperty({
+        description : "The field of research codes",
+        isArray : true
+    })
+    fieldOfResearchCodes : string[]
 }
