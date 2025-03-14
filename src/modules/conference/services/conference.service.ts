@@ -32,7 +32,7 @@ export class ConferenceService {
             },
         }
 
-        if(!conferenceFilter) {
+        if(!conferenceFilter ) {
             return await this.prismaService.conferences.findMany({
                 include
             });
@@ -68,9 +68,10 @@ export class ConferenceService {
                 },
                 organizations : {
                     some : {
-                        topics : {
-                            hasSome : conferenceFilter.topics || []
-                        },
+                        ...(conferenceFilter.topics ? {topics : {
+                            hasSome : conferenceFilter.topics
+                        }} : {}
+                        ),
                         locations : {
                             some : {
                                 cityStateProvince : {
