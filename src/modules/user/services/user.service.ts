@@ -24,10 +24,10 @@ export class UserService {
         return await this.prismaService.users.create({
             data : {
                 email : input.email,
-                firstName : input.name,
+                firstName : input.firstname,
+                lastName : input.lastname,
                 password : input.password,
                 role : "user",
-                lastName : "",
                 dob : new Date()
             }
         })
