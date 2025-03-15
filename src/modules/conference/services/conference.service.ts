@@ -5,6 +5,7 @@ import { RankDTO } from "../../source-rank/models/rank.dto";
 import { ConferenceQueryDto } from "../models/conference/conference-query.dto";
 import { PaginationService } from "../../common/services/pagination.service";
 import { ConferenceFilter } from "../models/conference-filter/conference.filter";
+import parser from "any-date-parser";
 
 @Injectable()
 export class ConferenceService {
@@ -40,70 +41,97 @@ export class ConferenceService {
         }
 
         const consferences = await this.prismaService.conferences.findMany({
-            include , 
-            where : {
-                title : {
-                    contains : conferenceFilter.title || "",
-                    mode : "insensitive"
-                },
-                acronym : {
-                    contains : conferenceFilter.acronym || "",
-                    mode : "insensitive"
-                },
-                // ranks : {
-                //     ...( (conferenceFilter.rank || conferenceFilter.source) ? 
-                //     { some : {
-                //         byRank : {
-                //             ...(conferenceFilter.rank ? {name : {
-                //                 contains : conferenceFilter.rank || "",
-                //                 mode : "insensitive"
-                //             }} : {}),
-                //             ...(conferenceFilter.source ?  {belongsToSource : {
-                //                 name : {
-                //                     contains : conferenceFilter.source || "",
-                //                     mode : "insensitive"
-                //                 }
-                //             }} : {})
-                //         }} 
-                //     } : {})
-                // },
-                // organizations : {
-                //     some : {
-                //         locations : {
-                //             some : {
-                //                 cityStateProvince : {
-                //                     contains : conferenceFilter.cityStateProvince || "",
-                //                     mode : "insensitive"
-                //                 },
-                //                 country : {
-                //                     contains : conferenceFilter.country || "", 
-                //                     mode : "insensitive"
-                //                 },
-                //                 continent : {
-                //                     contains : conferenceFilter.continent || "",
-                //                     mode : "insensitive"
-                //                 },
-                //                 address : {
-                //                     contains : conferenceFilter.address || "",
-                //                     mode : "insensitive"
-                //                 }
-                //             }
-                //         },
-                //         conferenceDates : {
-                //             ...(conferenceFilter.fromDate || conferenceFilter.toDate ?  {
-                //                 some : {
-                //                     ...( conferenceFilter.fromDate ? {fromDate : {
-                //                         gte : conferenceFilter.fromDate
-                //                     }} : {})    ,
-                //                     ...( conferenceFilter.toDate ?  {toDate : {
-                //                         lte : conferenceFilter.toDate 
-                //                     }} : {}) 
-                //                 }
-                //             } :{})
+            include, 
+            where: {
+            ...(conferenceFilter.title ? {
+                title: {
+                contains: conferenceFilter.title,
+                mode: "insensitive"
+                }
+            } : {}),
+            
+            ...(conferenceFilter.acronym ? {
+                acronym: {
+                contains: conferenceFilter.acronym,
+                mode: "insensitive"
+                }
+            } : {}),
+            
+            ranks: {
+                ...(conferenceFilter.rank || conferenceFilter.source ? { 
+                    some: {
+                        byRank: {
+                            ...(conferenceFilter.rank ? {
+                                name: {
+                                    contains: conferenceFilter.rank,
+                                    mode: "insensitive"
+                                }
+                            } : {}),
+                            ...(conferenceFilter.source ? {
+                                belongsToSource: {
+                                    name: {
+                                        contains: conferenceFilter.source,
+                                        mode: "insensitive"
+                                    }
+                                }
+                            } : {})
+                        }
+                    } 
+                } : {})
+            },
 
-                //         }
-                //     }
-                // }
+            organizations: {
+                some: {
+                locations: {
+                    some: {
+                    ...(conferenceFilter.cityStateProvince ? {
+                        cityStateProvince: {
+                        contains: conferenceFilter.cityStateProvince,
+                        mode: "insensitive"
+                        }
+                    } : {}),
+                    
+                    ...(conferenceFilter.country ? {
+                        country: {
+                        contains: conferenceFilter.country,
+                        mode: "insensitive"
+                        }
+                    } : {}),
+                    
+                    ...(conferenceFilter.continent ? {
+                        continent: {
+                        contains: conferenceFilter.continent,
+                        mode: "insensitive"
+                        }
+                    } : {}),
+                    
+                    ...(conferenceFilter.address ? {
+                        address: {
+                        contains: conferenceFilter.address,
+                        mode: "insensitive"
+                        }
+                    } : {})
+                    }
+                },
+                conferenceDates: {
+                    ...(conferenceFilter.fromDate || conferenceFilter.toDate ? {
+                    some: {
+                        ...(conferenceFilter.fromDate ? {
+                        fromDate: {
+                            gte: parser.fromString( conferenceFilter.fromDate)
+                        }
+                        } : {}),
+                        
+                        ...(conferenceFilter.toDate ? {
+                        toDate: {
+                            lte: parser.fromString( conferenceFilter.toDate)
+                        }
+                        } : {})
+                    }
+                    } : {})
+                }
+                }
+            }
             }
         });
         return consferences;

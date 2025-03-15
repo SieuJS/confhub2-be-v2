@@ -19,13 +19,13 @@ export class ConferenceFilter {
         description : "The conference start date",
         required : false,
     })
-    fromDate? : Date;
+    fromDate? : string;
 
     @ApiProperty({
         description : "The conference end date",
         required : false,
     })
-    toDate? : Date;
+    toDate? : string;
 
     @ApiProperty({
         description : "The topics of the conference",
