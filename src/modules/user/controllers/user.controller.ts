@@ -13,6 +13,11 @@ export class UserController {
         
     }
 
+    @Get() 
+    async getAllUsers() {
+        return await this.userService.getAllUsers();
+    }
+
     @Post('/signin') 
     @ApiBody({
         type : UserSigninInput
@@ -50,8 +55,7 @@ export class UserController {
         }
         const hashedPassword = crypto.createHash('sha256').update(input.password).digest('hex');
         await this.userService.createUser({
-            email : input.email,
-            name : input.email,
+            ...input,
             password : hashedPassword
         });
         return {

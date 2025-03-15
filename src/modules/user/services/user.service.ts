@@ -8,6 +8,10 @@ export class UserService {
         private prismaService : PrismaService
     ) {}
 
+    async getAllUsers () {
+        return await this.prismaService.users.findMany();
+    }
+
     async getUserByEmail(email : string) {
         return await this.prismaService.users.findFirst({
             where : {
