@@ -8,7 +8,7 @@ import {
     SourceService,
     FieldOfResearchService,
 } from "../../source-rank";
-import { RankInputDTO } from "src/modules/source-rank/models/rank-input.dto";
+import { RankInputDTO } from "../../source-rank/models/rank-input.dto";
 import { ConferenceImportResponseDTO } from "../models/conference-response/conference-import-response.dto";
 import { ConferenceCrawlInputDTO } from "../models/conference-crawl/conference-crawl";
 import { ConferenceCrawlJobService } from '../../conference-job'
@@ -18,6 +18,7 @@ import { ConferenceAttribute } from "../../../constants/conference-attribute";
 import { PaginationService } from "../../common/services/pagination.service";
 import { GetConferencesParams } from "../models/conference-request/get-conference-params";
 import { AdminService } from "../../user/services/admin.service";
+import { ConferenceRankService } from "../services/conference-rank.service";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -30,7 +31,8 @@ export class ConferenceController {
         private readonly conferenceCrawlJobService : ConferenceCrawlJobService,
         private readonly conferenceOrganizationService : ConferenceOrganizationSerivce,
         private readonly paginationService : PaginationService<ConferenceDTO>,
-        private readonly adminService : AdminService
+        private readonly adminService : AdminService,
+        private readonly conferenceRankService : ConferenceRankService
     ) {}
 
     @ApiParam({
@@ -166,8 +168,18 @@ export class ConferenceController {
     @Get(':id')
     async getConferenceById(@Param('id') id : string) {
         const conference = await this.conferenceService.getConferenceById(id);
+        const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
+        const locations = await this.conferenceOrganizationService.getLocationsByOrganizedId(organization.id);
+        const dates = await this.conferenceOrganizationService.getDatesByOrganizedId(organization.id);
+        const ranks = await this.conferenceRankService.getRankByConferenceId(conference.id);
 
-        return conference;
+        return {
+            conference,
+            organization,
+            locations,
+            dates,
+            ranks
+        }
     }
 
     @Post('crawl')
