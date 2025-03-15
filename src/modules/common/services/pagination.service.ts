@@ -20,12 +20,14 @@ export class PaginationService<T> {
         const totalPage = Math.ceil(items.length / perPage);
         const prevPage = curPage > 1 ? curPage - 1 : null;
         const nextPage = curPage < totalPage ? curPage + 1 : null;
+        const totalItems = items.length;
         const meta : PaginationDTO = {
             curPage,
             perPage,
             totalPage,
             prevPage,
-            nextPage
+            nextPage,
+            totalItems
         }
         return {
             payload,

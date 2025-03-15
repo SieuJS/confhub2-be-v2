@@ -60,20 +60,21 @@ export class ConferenceController {
                     address : locations[0].address,
                     continent : locations[0].continent,
                 },
-                rank : conference.ranks[0].byRank?.name,
-                source : conference.ranks[0].byRank?.belongsToSource.name,
-                year : conference.ranks[0].year,
-               researchFields: conference.ranks.map(rank => rank.inFieldOfResearch.name),
+                rank : conference.ranks[0]?.byRank?.name,
+                source : conference.ranks[0]?.byRank?.belongsToSource.name,
+                year : conference.ranks[0]?.year,
+                researchFields: conference.ranks.map(rank => rank.inFieldOfResearch.name),
                 topics : organization.topics,
-                dates : dates.map(date => {
+                dates : dates.filter(date => {
+                    return (date.type === 'conferenceDates')
+                }).map(date => {
                     return {
-                        name : date.name,
-                        type : date.type,
                         fromDate : date.fromDate,
                         toDate : date.toDate,
+                        name : date.name,
+                        type : date.type
                     }
-                }
-                ),
+                })[0],
                 link : organization.link,
                 createdAt : conference.createdAt,
                 updatedAt : conference.updatedAt,

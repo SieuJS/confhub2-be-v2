@@ -16,4 +16,7 @@ export class PaginationDTO {
     @ApiProperty({description : "Next page", example : 2})
     nextPage : number | null
 
+    @ApiProperty({description : "Total items", example : 100})
+    totalItems : number
+
 }

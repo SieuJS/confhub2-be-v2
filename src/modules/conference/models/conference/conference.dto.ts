@@ -37,7 +37,7 @@ export class ConferenceDTO {
     topics: string[]
 
     @ApiProperty({description : 'Conference dates',type : ConferenceDatesDTO})
-    dates: ConferenceDatesDTO[]
+    dates: ConferenceDatesDTO
 
     @ApiProperty({description : 'Conference link', example : 'https://www.conference.com'})
     link: string

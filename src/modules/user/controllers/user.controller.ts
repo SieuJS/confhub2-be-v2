@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Post, UsePipes, ValidationPipe } from "@nestjs/common";
 import { UserService } from "../services/user.service";
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { UserInput, UserSigninInput } from "../models/user.input";
@@ -20,17 +20,13 @@ export class UserController {
     async signin(@Body() input : UserSigninInput) {
         const user =  await this.userService.getUserByEmail(input.email);
         if(!user) {
-            return {
-                message : "User not found"
-            }
+            return new HttpException('User not found', 404);
         }
         // Compare the hashed password with the input password
         const hashedInputPassword = crypto.createHash('sha256').update(input.password).digest('hex');
         const isPasswordValid = hashedInputPassword === user.password;
         if (!isPasswordValid) {
-            return {
-                message: "Invalid credentils"
-            };
+            return new HttpException('Invalid password', 401);
         }
 
         // If password is valid, return user or token
@@ -41,6 +37,7 @@ export class UserController {
     }
 
     @Post('/signup')
+    @UsePipes(new ValidationPipe({transform : true}))
     @ApiBody({
         type : UserInput
     })
