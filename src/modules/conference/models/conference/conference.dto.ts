@@ -52,4 +52,10 @@ export class ConferenceDTO {
     @IsUUID()
     creatorId: string
 
+    @ApiProperty({
+        description : "Type of conference",
+        example : "hybrid"
+    })
+    accessType : string;
+
 }

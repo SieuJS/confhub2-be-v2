@@ -80,7 +80,8 @@ export class ConferenceController {
                 link : organization.link,
                 createdAt : conference.createdAt,
                 updatedAt : conference.updatedAt,
-                creatorId : conference.creatorId
+                creatorId : conference.creatorId,
+                accessType : organization.accessType
 
             }
             return conferenceDTO;
@@ -106,6 +107,12 @@ export class ConferenceController {
                 conferenceImport.title,
                 conferenceImport.acronym
             );
+        const year = new Date().getFullYear();
+        conferenceImport.year = year;
+
+        conferenceImport.fieldOfResearchCodes = conferenceImport.fieldOfResearchCodes.filter(
+            (code) => code !== ""
+        )
 
         if (!conferenceInstance) {
             isExists = false;
@@ -154,6 +161,13 @@ export class ConferenceController {
             isExists,
             channel : "cfp-crawl-"+JobCrawlInstance.id
         };
+    }
+
+    @Get(':id')
+    async getConferenceById(@Param('id') id : string) {
+        const conference = await this.conferenceService.getConferenceById(id);
+
+        return conference;
     }
 
     @Post('crawl')
