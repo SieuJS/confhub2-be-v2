@@ -68,7 +68,7 @@ model Conferences {
   creatorId     String
   createdAt     DateTime                  @default(now())
   updatedAt     DateTime                  @updatedAt
-  follows       ConferenceFollows[]
+  follows       ConferenceFollows []
   likes         ConferenceLikes[]
   organizations ConferenceOrganizations[]
   ranks         ConferenceRanks[]

@@ -50,60 +50,60 @@ export class ConferenceService {
                     contains : conferenceFilter.acronym || "",
                     mode : "insensitive"
                 },
-                ranks : {
-                    some : {
-                        byRank : {
-                            ...(conferenceFilter.rank ? {name : {
-                                contains : conferenceFilter.rank || "",
-                                mode : "insensitive"
-                            }} : {}),
-                            ...(conferenceFilter.source ?  {belongsToSource : {
-                                name : {
-                                    contains : conferenceFilter.source || "",
-                                    mode : "insensitive"
-                                }
-                            }} : {})
-                        }
-                    }
-                },
-                organizations : {
-                    some : {
-                        ...(conferenceFilter.topics ? {topics : {
-                            hasSome : conferenceFilter.topics
-                        }} : {}
-                        ),
-                        locations : {
-                            some : {
-                                cityStateProvince : {
-                                    contains : conferenceFilter.cityStateProvince || "",
-                                    mode : "insensitive"
-                                },
-                                country : {
-                                    contains : conferenceFilter.country || "", 
-                                    mode : "insensitive"
-                                },
-                                continent : {
-                                    contains : conferenceFilter.continent || "",
-                                    mode : "insensitive"
-                                },
-                                address : {
-                                    contains : conferenceFilter.address || "",
-                                    mode : "insensitive"
-                                }
-                            }
-                        },
-                        conferenceDates : {
-                            some : {
-                                ...( conferenceFilter.fromDate ? {fromDate : {
-                                    gte : conferenceFilter.fromDate
-                                }} : {})    ,
-                                ...( conferenceFilter.toDate ?  {toDate : {
-                                    lte : conferenceFilter.toDate 
-                                }} : {}) 
-                            }
-                        }
-                    }
-                }
+                // ranks : {
+                //     ...( (conferenceFilter.rank || conferenceFilter.source) ? 
+                //     { some : {
+                //         byRank : {
+                //             ...(conferenceFilter.rank ? {name : {
+                //                 contains : conferenceFilter.rank || "",
+                //                 mode : "insensitive"
+                //             }} : {}),
+                //             ...(conferenceFilter.source ?  {belongsToSource : {
+                //                 name : {
+                //                     contains : conferenceFilter.source || "",
+                //                     mode : "insensitive"
+                //                 }
+                //             }} : {})
+                //         }} 
+                //     } : {})
+                // },
+                // organizations : {
+                //     some : {
+                //         locations : {
+                //             some : {
+                //                 cityStateProvince : {
+                //                     contains : conferenceFilter.cityStateProvince || "",
+                //                     mode : "insensitive"
+                //                 },
+                //                 country : {
+                //                     contains : conferenceFilter.country || "", 
+                //                     mode : "insensitive"
+                //                 },
+                //                 continent : {
+                //                     contains : conferenceFilter.continent || "",
+                //                     mode : "insensitive"
+                //                 },
+                //                 address : {
+                //                     contains : conferenceFilter.address || "",
+                //                     mode : "insensitive"
+                //                 }
+                //             }
+                //         },
+                //         conferenceDates : {
+                //             ...(conferenceFilter.fromDate || conferenceFilter.toDate ?  {
+                //                 some : {
+                //                     ...( conferenceFilter.fromDate ? {fromDate : {
+                //                         gte : conferenceFilter.fromDate
+                //                     }} : {})    ,
+                //                     ...( conferenceFilter.toDate ?  {toDate : {
+                //                         lte : conferenceFilter.toDate 
+                //                     }} : {}) 
+                //                 }
+                //             } :{})
+
+                //         }
+                //     }
+                // }
             }
         });
         return consferences;

@@ -76,4 +76,10 @@ export class ConferenceFilter {
         required : false
     })
     source? : string;
+
+    @ApiProperty({
+        description : "The conference type",
+        required : false
+    })
+    accessType? : string;
 }

@@ -34,11 +34,6 @@ export class ConferenceController {
         private readonly adminService : AdminService,
         private readonly conferenceRankService : ConferenceRankService
     ) {}
-
-    @ApiQuery({
-        required: false,
-        type: GetConferencesParams,
-    })
     @ApiResponse({
         status: 200,
         description: "Get all conferences",
@@ -52,6 +47,7 @@ export class ConferenceController {
             if(!organization) {
                 return undefined;
             }
+            
             const locations = await this.conferenceOrganizationService.getLocationsByOrganizedId(organization.id);
             const dates = await this.conferenceOrganizationService.getDatesByOrganizedId(organization.id);
             const conferenceDTO : ConferenceDTO = {
@@ -64,8 +60,8 @@ export class ConferenceController {
                     address : locations[0].address,
                     continent : locations[0].continent,
                 },
-                rank : conference.ranks[0].byRank.name,
-                source : conference.ranks[0].byRank.belongsToSource.name,
+                rank : conference.ranks[0].byRank?.name,
+                source : conference.ranks[0].byRank?.belongsToSource.name,
                 year : conference.ranks[0].year,
                researchFields: conference.ranks.map(rank => rank.inFieldOfResearch.name),
                 topics : organization.topics,
