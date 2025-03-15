@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { ConferenceService } from "../services/conference.service";
-import { ApiBody, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ConferencePaginationDTO } from "../models/conference/conference-pagination.dto";
 import { ConferenceImportDTO } from "../models/conference/conference-import.dto";
 import {
@@ -35,8 +35,7 @@ export class ConferenceController {
         private readonly conferenceRankService : ConferenceRankService
     ) {}
 
-    @ApiParam({
-        name: "params",
+    @ApiQuery({
         required: false,
         type: GetConferencesParams,
     })
@@ -46,7 +45,7 @@ export class ConferenceController {
         type: ConferencePaginationDTO,
     })
     @Get()
-    async getConferences(@Param() params: GetConferencesParams) {
+    async getConferences(@Query() params: GetConferencesParams) {
         const conferences =  await this.conferenceService.getConferences(params);
         const conferenceToResponse : ConferenceDTO[] = await Promise.all(conferences.map( async conference => {
             const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
