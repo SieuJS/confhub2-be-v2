@@ -80,7 +80,7 @@ export class ConferenceService {
                 } : {})
             },
 
-            organizations: {
+            ...(conferenceFilter.topics || conferenceFilter.fromDate || conferenceFilter.toDate || conferenceFilter.cityStateProvince || conferenceFilter.continent || conferenceFilter.country ? {organizations: {
                 some: {
                     ...(conferenceFilter.topics ?
                         {
@@ -143,7 +143,7 @@ export class ConferenceService {
                     } : {})
                 }
                 }
-            }
+            }} : {})
             }
         });
         return consferences;

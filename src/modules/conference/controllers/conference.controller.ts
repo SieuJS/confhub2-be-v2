@@ -47,10 +47,32 @@ export class ConferenceController {
             params.topics = [topics];
         }
         const conferences =  await this.conferenceService.getConferences(params);
+    
         const conferenceToResponse : ConferenceDTO[] = await Promise.all(conferences.map( async conference => {
             const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
             if(!organization) {
-                return undefined;
+                return {
+                    id : conference.id,
+                    title : conference.title,
+                    acronym : conference.acronym,
+                    location : {
+                        cityStateProvince : null,
+                        country : null,
+                        address : null,
+                        continent : null,
+                    },
+                    rank : null,
+                    source : null,
+                    year : null,
+                    researchFields: [],
+                    topics : [],
+                    dates : null,
+                    link : null,
+                    createdAt : conference.createdAt,
+                    updatedAt : conference.updatedAt,
+                    creatorId : conference.creatorId,
+                    accessType : null
+                }
             }
             
             const locations = await this.conferenceOrganizationService.getLocationsByOrganizedId(organization.id);
@@ -90,6 +112,11 @@ export class ConferenceController {
             return conferenceDTO;
         }))
         return this.paginationService.paginate(conferenceToResponse, params.curPage, params.perPage);
+    }
+
+    @Get('all') 
+    async getAllConferences() {
+        return this.conferenceService.getConferences();
     }
 
     @ApiResponse({
@@ -149,23 +176,23 @@ export class ConferenceController {
             }
         });
 
-        const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
-            conferenceId : conferenceInstance.id,
-            conferenceAcronym : conferenceImport.acronym,
-            conferenceTitle : conferenceImport.title,
-            status : ConferenceAttribute.JOB_STATUS_PENDING,
-            progress : 0,
-            message : 'pending'
-        })
+        // const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
+        //     conferenceId : conferenceInstance.id,
+        //     conferenceAcronym : conferenceImport.acronym,
+        //     conferenceTitle : conferenceImport.title,
+        //     status : ConferenceAttribute.JOB_STATUS_PENDING,
+        //     progress : 0,
+        //     message : 'pending'
+        // })
 
         return {
-            crawlJobId : JobCrawlInstance.id,
+            // crawlJobId : JobCrawlInstance.id,
             conferenceId: conferenceInstance.id,
             isExists,
-            channel : "cfp-crawl-"+JobCrawlInstance.id
+            // channel : "cfp-crawl-"+JobCrawlInstance.id
         };
     }
-
+    
     @Get(':id')
     async getConferenceById(@Param('id') id : string) {
         const conference = await this.conferenceService.getConferenceById(id);
@@ -188,6 +215,21 @@ export class ConferenceController {
         type : ConferenceCrawlInputDTO
     })
     async crawlConferences(@Body() conferenceCrawl : ConferenceCrawlInputDTO) {
-        
+
+        const conferenceInstance = await this.conferenceService.getConferenceById(conferenceCrawl.conferenceId); 
+        const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
+            conferenceId : conferenceInstance.id,
+            conferenceAcronym : conferenceInstance.acronym,
+            conferenceTitle : conferenceInstance.title,
+            status : ConferenceAttribute.JOB_STATUS_PENDING,
+            progress : 0,
+            message : 'pending'
+        })
+
+        return {
+            crawlJobId : JobCrawlInstance.id,
+            conferenceId: conferenceInstance.id,
+            channel : "cfp-crawl-"+JobCrawlInstance.id
+        };
     }
 }

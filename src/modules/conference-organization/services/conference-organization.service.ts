@@ -119,9 +119,12 @@ export class ConferenceOrganizationSerivce {
                 updatedAt : 'desc'
             }
         });
+        if(!organizedDb) {
+            return undefined;
+        }
         return {
             ...organizedDb,
-            topics : organizedDb.topics.map(topic => topic.inTopic.name)
+            topics : organizedDb.topics?.map(topic => topic.inTopic.name)
         }
     }
 
