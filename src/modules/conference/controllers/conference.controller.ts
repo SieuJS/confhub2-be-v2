@@ -96,7 +96,7 @@ export class ConferenceController {
         type: ConferenceImportDTO,
     })
     @Post("import")
-    async importConferences(@Body() conferenceImport: ConferenceImportDTO) : Promise<ConferenceImportResponseDTO> {
+    async importConferences(@Body() conferenceImport: ConferenceImportDTO) : Promise<any> {
         let isExists = true;
         const user = await this.adminService.getAdmin();
         conferenceImport.creatorId = user.id;
@@ -144,20 +144,20 @@ export class ConferenceController {
             }
         });
 
-        const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
-            conferenceId : conferenceInstance.id,
-            conferenceAcronym : conferenceImport.acronym,
-            conferenceTitle : conferenceImport.title,
-            status : ConferenceAttribute.JOB_STATUS_PENDING,
-            progress : 0,
-            message : 'pending'
-        })
+        // const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
+        //     conferenceId : conferenceInstance.id,
+        //     conferenceAcronym : conferenceImport.acronym,
+        //     conferenceTitle : conferenceImport.title,
+        //     status : ConferenceAttribute.JOB_STATUS_PENDING,
+        //     progress : 0,
+        //     message : 'pending'
+        // })
 
         return {
-            crawlJobId : JobCrawlInstance.id,
+            // crawlJobId : JobCrawlInstance.id,
             conferenceId: conferenceInstance.id,
             isExists,
-            channel : "cfp-crawl-"+JobCrawlInstance.id
+            // channel : "cfp-crawl-"+JobCrawlInstance.id
         };
     }
 

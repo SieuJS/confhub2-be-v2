@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../common";
+import { ConferenceRankDTO } from "../models/conference-rank/conference-rank.dto";
 
 @Injectable() 
 export class ConferenceRankService {
@@ -9,8 +10,8 @@ export class ConferenceRankService {
 
     }
 
-    async getRankByConferenceId(conferenceId : string) {
-        return this.prismaService.conferenceRanks.findMany({
+    async getRankByConferenceId(conferenceId : string) : Promise<ConferenceRankDTO[]> {
+        const rankInfos = await this.prismaService.conferenceRanks.findMany({
             where : {
                 conferenceId
             },
@@ -23,5 +24,15 @@ export class ConferenceRankService {
                 }
             }
         })
+        const results : ConferenceRankDTO[] = rankInfos.map(rankInfo => {
+            return {
+                rank : rankInfo.byRank.name,
+                source : rankInfo.byRank.belongsToSource.name,
+                fieldOfResearch : rankInfo.inFieldOfResearch.name
+            }
+        }
+        )
+        return results;
+
     }
 }

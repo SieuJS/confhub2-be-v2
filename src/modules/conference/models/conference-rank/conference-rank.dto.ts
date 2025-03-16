@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class ConferenceRank {
+export class ConferenceRankDTO {
     @ApiProperty({
         description : "The conference rank",
         required : true
