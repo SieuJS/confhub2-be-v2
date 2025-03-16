@@ -41,7 +41,41 @@ export class ConferenceOrganizationSerivce {
         return date;
     }
 
+    async importTopics (organizedId : string ,topics : string[]) {
+        let topicsInDb = await this.prismaService.topics.findMany({
+            where : {
+                name : {
+                    in : topics
+                }
+            }
+        })
+
+        const topicsToCreate = topics.filter(topic => {
+            return !topicsInDb.find(topicInDb => topicInDb.name === topic)
+        })
+
+        const topicsCreated = await this.prismaService.topics.createManyAndReturn({
+            data : topicsToCreate.map(topic => {
+                return {
+                    name : topic
+                }
+            })
+        })  
+        
+        topicsInDb = topicsInDb.concat(topicsCreated);
+
+        const organizedTopics = await this.prismaService.conferenceTopics.createMany({
+            data : topicsInDb.map(topic => {
+                return {
+                    organizeId : organizedId,
+                    topicId : topic.id
+                }
+            })
+        })
+    }
+
     async importOrganize(input : OrganizedInput) : Promise<OrganizedDTO> {
+        
         const organize = await this.prismaService.conferenceOrganizations.create({
             data : {
                 year    : input.year,
@@ -53,22 +87,42 @@ export class ConferenceOrganizationSerivce {
                 summerize : input.summerize,
                 callForPaper : input.callForPaper,
                 conferenceId : input.conferenceId,
-                topics : input.topics,
             }
         })
-        return organize;
+
+        await this.importTopics(organize.id, input.topics);
+
+        return {
+            ...organize,
+            topics : input.topics
+        }
     }
 
-    async getFirstOrganizationsByConferenceId(conferenceId : string) {
-        return this.prismaService.conferenceOrganizations.findFirst({
+    async getFirstOrganizationsByConferenceId(conferenceId : string) : Promise<OrganizedDTO> {
+       const organizedDb = await this.prismaService.conferenceOrganizations.findFirst({
             where : {
                 isAvailable : true,
                 conferenceId
+            },
+            include: {
+                topics : {
+                    include : {
+                        inTopic : {
+                            select : {
+                                name : true
+                            }
+                        }
+                    }
+                }
             },
             orderBy : {
                 updatedAt : 'desc'
             }
         });
+        return {
+            ...organizedDb,
+            topics : organizedDb.topics.map(topic => topic.inTopic.name)
+        }
     }
 
     async getLocationsByOrganizedId(organizedId : string) {

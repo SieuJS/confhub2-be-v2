@@ -55,10 +55,29 @@ model ConferenceOrganizations {
   link            String
   cfpLink         String
   impLink         String
-  topics          String[]
+  topics          ConferenceTopics[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   belongsTo       Conferences       @relation(fields: [conferenceId], references: [id])
+}
+
+model ConferenceTopics {
+  id           String      @id @default(uuid())
+  organizeId String
+  topicId      String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  belongsTo    ConferenceOrganizations @relation(fields: [organizeId], references: [id])
+  inTopic      Topics      @relation(fields: [topicId], references: [id])
+}
+
+model Topics {
+  id        String @id @default(uuid())
+  name      String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  inConferenceTopics ConferenceTopics[]
+  inJournalTopics    JournalTopics[]
 }
 
 model Conferences {
@@ -114,11 +133,12 @@ model Sources {
   ranks Ranks[]
 }
 
-model TopicsInJournals {
+model JournalTopics {
   id                String   @id @default(uuid())
   journalId         String
   topicId           String
-  belongsToJournals Journals @relation(fields: [journalId], references: [id])
+  belongsToTopics   Topics   @relation(fields: [topicId], references: [id])
+  inJournals Journals @relation(fields: [journalId], references: [id])
 }
 
 model JournalRanks {
@@ -141,7 +161,7 @@ model Journals {
   nation          String
   scope           String
   emailSubmission String
-  topics          TopicsInJournals[]
+  topics          JournalTopics[]
   journalRanks    JournalRanks[]
   journalLikes    JournalLikes[]
   journalFollows  JournalFollows[]

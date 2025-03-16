@@ -40,7 +40,12 @@ export class ConferenceController {
         type: ConferencePaginationDTO,
     })
     @Get()
-    async getConferences(@Query() params: GetConferencesParams) {
+    async getConferences(@Query() params: GetConferencesParams, @Query('topics') topics : string | string[]) {
+        if(topics instanceof Array) {
+            params.topics = topics;
+        } else if(topics) {
+            params.topics = [topics];
+        }
         const conferences =  await this.conferenceService.getConferences(params);
         const conferenceToResponse : ConferenceDTO[] = await Promise.all(conferences.map( async conference => {
             const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
@@ -144,20 +149,20 @@ export class ConferenceController {
             }
         });
 
-        // const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
-        //     conferenceId : conferenceInstance.id,
-        //     conferenceAcronym : conferenceImport.acronym,
-        //     conferenceTitle : conferenceImport.title,
-        //     status : ConferenceAttribute.JOB_STATUS_PENDING,
-        //     progress : 0,
-        //     message : 'pending'
-        // })
+        const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
+            conferenceId : conferenceInstance.id,
+            conferenceAcronym : conferenceImport.acronym,
+            conferenceTitle : conferenceImport.title,
+            status : ConferenceAttribute.JOB_STATUS_PENDING,
+            progress : 0,
+            message : 'pending'
+        })
 
         return {
-            // crawlJobId : JobCrawlInstance.id,
+            crawlJobId : JobCrawlInstance.id,
             conferenceId: conferenceInstance.id,
             isExists,
-            // channel : "cfp-crawl-"+JobCrawlInstance.id
+            channel : "cfp-crawl-"+JobCrawlInstance.id
         };
     }
 

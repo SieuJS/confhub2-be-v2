@@ -82,6 +82,18 @@ export class ConferenceService {
 
             organizations: {
                 some: {
+                    ...(conferenceFilter.topics ?
+                        {
+                            topics :{
+                                some : {
+                                    inTopic : {
+                                        name : {
+                                            in: conferenceFilter.topics,
+                                            mode : "insensitive"}
+                                    }
+                                }
+                            }
+                        } : {}) ,
                 locations: {
                     some: {
                     ...(conferenceFilter.cityStateProvince ? {

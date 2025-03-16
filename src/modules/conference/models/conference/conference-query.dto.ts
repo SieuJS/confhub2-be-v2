@@ -7,7 +7,7 @@ export class ConferenceQueryDto extends PickType(ConferenceDTO, [
     "source",
     "rank",
     "year",
-    "fieldOfResearchCodes",
+    "researchFields",
 ])  {
     @ApiProperty({ description: "From Date", type: Date, required: false })
     fromDate: Date;
