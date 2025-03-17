@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Param, Post, Query } from "@nestjs/common";
 import { ConferenceService } from "../services/conference.service";
 import { ApiBody, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ConferencePaginationDTO } from "../models/conference/conference-pagination.dto";
@@ -176,20 +176,31 @@ export class ConferenceController {
             }
         });
 
-        // const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
-        //     conferenceId : conferenceInstance.id,
-        //     conferenceAcronym : conferenceImport.acronym,
-        //     conferenceTitle : conferenceImport.title,
-        //     status : ConferenceAttribute.JOB_STATUS_PENDING,
-        //     progress : 0,
-        //     message : 'pending'
-        // })
-
         return {
-            // crawlJobId : JobCrawlInstance.id,
             conferenceId: conferenceInstance.id,
             isExists,
-            // channel : "cfp-crawl-"+JobCrawlInstance.id
+        };
+    }
+
+
+    @Post('crawl-new')
+    async importManyConferences(@Body() {conferenceId} : {conferenceId : string}) {
+
+        const conferenceInstance = await this.conferenceService.getConferenceById(conferenceId);
+
+        const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
+            conferenceId : conferenceInstance.id,
+            conferenceAcronym : conferenceInstance.acronym,
+            conferenceTitle : conferenceInstance.title,
+            status : ConferenceAttribute.JOB_STATUS_PENDING,
+            progress : 0,
+            message : 'pending'
+        })
+
+        return {
+            crawlJobId : JobCrawlInstance.id,
+            conferenceId: conferenceInstance.id,
+            channel : "cfp-crawl-"+JobCrawlInstance.id
         };
     }
     
@@ -217,6 +228,11 @@ export class ConferenceController {
     async crawlConferences(@Body() conferenceCrawl : ConferenceCrawlInputDTO) {
 
         const conferenceInstance = await this.conferenceService.getConferenceById(conferenceCrawl.conferenceId); 
+
+        if(!conferenceInstance) {
+            return new HttpException('Conference not found', 404); 
+        }
+
         const JobCrawlInstance = await this.conferenceCrawlJobService.createConferenceCrawlJob({
             conferenceId : conferenceInstance.id,
             conferenceAcronym : conferenceInstance.acronym,
