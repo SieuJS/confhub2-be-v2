@@ -225,9 +225,10 @@ export class ConferenceController {
     @ApiBody({
         type : ConferenceCrawlInputDTO
     })
-    async crawlConferences(@Body() conferenceCrawl : ConferenceCrawlInputDTO) {
+    async crawlConferences(@Body() conferenceCrawl : ConferenceImportDTO) {
 
-        const conferenceInstance = await this.conferenceService.getConferenceById(conferenceCrawl.conferenceId); 
+        const conferenceInstance = await this.conferenceService.getConferenceByAcronymAndTitle(
+            conferenceCrawl.title, conferenceCrawl.acronym)
 
         if(!conferenceInstance) {
             return new HttpException('Conference not found', 404); 
@@ -245,7 +246,10 @@ export class ConferenceController {
         return {
             crawlJobId : JobCrawlInstance.id,
             conferenceId: conferenceInstance.id,
-            channel : "cfp-crawl-"+JobCrawlInstance.id
+            channel : "cfp-crawl-"+JobCrawlInstance.id,
+            conferenceAcronym : conferenceInstance.acronym,
+            conferenceTitle : conferenceInstance.title,
+            createdAt : JobCrawlInstance.createdAt
         };
     }
 }
