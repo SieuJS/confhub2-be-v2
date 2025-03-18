@@ -89,6 +89,7 @@ model Conferences {
   updatedAt     DateTime                  @updatedAt
   follows       ConferenceFollows []
   likes         ConferenceLikes[]
+  calendars     ConferenceCalendars[]
   organizations ConferenceOrganizations[]
   ranks         ConferenceRanks[]
   crawlJobs     ConferenceCrawlJobs[]
@@ -178,6 +179,7 @@ model ConferenceFollows {
   updatedAt    DateTime    @updatedAt
   belongsTo    Conferences @relation(fields: [conferenceId], references: [id])
   byUser       Users       @relation(fields: [userId], references: [id])
+  @@unique([conferenceId, userId])
 }
 
 model ConferenceLikes {
@@ -188,6 +190,18 @@ model ConferenceLikes {
   updatedAt    DateTime    @updatedAt
   belongsTo    Conferences @relation(fields: [conferenceId], references: [id])
   byUser       Users       @relation(fields: [userId], references: [id])
+  @@unique([conferenceId, userId])
+}
+
+model ConferenceCalendars {
+  id         String      @id @default(uuid())
+  conferenceId String
+  userId      String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  belongsTo  Conferences @relation(fields: [conferenceId], references: [id])
+  byUser     Users       @relation(fields: [userId], references: [id])
+  @@unique([conferenceId, userId])
 }
 
 model JournalLikes {
@@ -220,6 +234,7 @@ model Users {
   role               String
   followConference   ConferenceFollows[]
   likes              ConferenceLikes[]
+  calendar           ConferenceCalendars[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   createdConferences Conferences[]

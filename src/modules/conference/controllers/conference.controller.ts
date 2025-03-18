@@ -19,6 +19,7 @@ import { PaginationService } from "../../common/services/pagination.service";
 import { GetConferencesParams } from "../models/conference-request/get-conference-params";
 import { AdminService } from "../../user/services/admin.service";
 import { ConferenceRankService } from "../services/conference-rank.service";
+import { UserService } from "../../user/services/user.service";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -32,6 +33,7 @@ export class ConferenceController {
         private readonly conferenceOrganizationService : ConferenceOrganizationSerivce,
         private readonly paginationService : PaginationService<ConferenceDTO>,
         private readonly adminService : AdminService,
+        private readonly userService : UserService,
         private readonly conferenceRankService : ConferenceRankService
     ) {}
     @ApiResponse({
@@ -251,5 +253,25 @@ export class ConferenceController {
             conferenceTitle : conferenceInstance.title,
             createdAt : JobCrawlInstance.createdAt
         };
+    }
+
+    @Post('follow')
+    async followConference(@Body() input : {userId : string, conferenceId : string}) {
+        const conferenceIds= await this.userService.followConference(input.userId, input.conferenceId);
+        return conferenceIds;
+    }
+
+    @Post('unfollow')
+    async unfollowConference(@Body() input : {userId : string, conferenceId : string}) {
+        const conferenceIds= await this.userService.unfollowConference(input.userId, input.conferenceId);
+        return conferenceIds;
+    }
+
+    @Get('followed')
+    async getFollowedConferences(@Query('userId') userId : string) {
+        const conferenceIds = await this.userService.getFollowedConferences(userId);
+        const results = await Promise.all(conferenceIds.map(async conferenceId => {
+            return await this.conferenceService.getConferenceById(conferenceId.id);
+        }))
     }
 }

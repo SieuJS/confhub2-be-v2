@@ -62,4 +62,10 @@ export class UserController {
             message : "User created"
         }
     }
+
+
+    @Post('/follow-conference')
+    async followConference(@Body() input : {userId : string, conferenceId : string}) {
+        return await this.userService.followConference(input.userId, input.conferenceId);
+    }
 }

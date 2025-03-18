@@ -32,6 +32,53 @@ export class UserService {
             }
         })
     }
-
     
+    async followConference(userId : string, conferenceId : string) {
+        return await this.prismaService.conferenceLikes.create({
+            data : {
+                userId,
+                conferenceId
+            }
+        })
+    }
+
+    async unfollowConference(userId : string, conferenceId : string) {
+        return await this.prismaService.conferenceLikes.delete({
+            where : {
+                conferenceId_userId : {
+                    userId,
+                    conferenceId
+                }
+            }
+        })
+    }
+
+    async getFollowedConferences(userId : string) {
+        return await this.prismaService.conferenceLikes.findMany({
+            where : {
+                userId
+            }
+        })
+    }
+
+    async addToCalendar(userId : string, conferenceId : string) {
+        return await this.prismaService.conferenceCalendars.create({
+            data : {
+                userId,
+                conferenceId
+            }
+        })
+    }
+
+    async removeFromCalendar(userId : string, conferenceId : string) {
+        return await this.prismaService.conferenceCalendars.delete({
+            where : {
+                conferenceId_userId : {
+                    userId,
+                    conferenceId
+                }
+            }
+        })
+    }
+
 }
