@@ -34,10 +34,13 @@ export class UserController {
             return new HttpException('Invalid password', 401);
         }
 
+        const token = await this.userService.generateToken(user.id);
+
         // If password is valid, return user or token
         return {
             message: "Login successful",
-            user
+            user,
+            token
         };
     }
 
@@ -54,12 +57,17 @@ export class UserController {
             }
         }
         const hashedPassword = crypto.createHash('sha256').update(input.password).digest('hex');
-        await this.userService.createUser({
+        const newUser = await this.userService.createUser({
             ...input,
             password : hashedPassword
         });
+
+        const token = await this.userService.generateToken(newUser.id);
+        
         return {
-            message : "User created"
+            message : "User created",
+            user : newUser,
+            token
         }
     }
 }
