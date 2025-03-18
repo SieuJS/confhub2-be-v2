@@ -1,8 +1,10 @@
-import { Body, Controller, Get, HttpException, Post, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Post, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { UserService } from "../services/user.service";
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { UserInput, UserSigninInput } from "../models/user.input";
 import * as crypto from 'crypto';
+import { LocalAuthGuard } from "../../auth/guards/local.guard";
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags('user')
 @Controller('/user')
@@ -18,24 +20,14 @@ export class UserController {
         return await this.userService.getAllUsers();
     }
 
+    @UseGuards(AuthGuard('local'))
     @Post('/signin') 
     @ApiBody({
         type : UserSigninInput
     })
-    async signin(@Body() input : UserSigninInput) {
-        const user =  await this.userService.getUserByEmail(input.email);
-        if(!user) {
-            return new HttpException('User not found', 404);
-        }
-        // Compare the hashed password with the input password
-        const hashedInputPassword = crypto.createHash('sha256').update(input.password).digest('hex');
-        const isPasswordValid = hashedInputPassword === user.password;
-        if (!isPasswordValid) {
-            return new HttpException('Invalid password', 401);
-        }
-
-        const token = await this.userService.generateToken(user.id);
-
+    async signin(@Req() req) {
+        const user = req.user;
+        const token = await this.userService.generateToken(user.id);    
         // If password is valid, return user or token
         return {
             message: "Login successful",
@@ -69,5 +61,17 @@ export class UserController {
             user : newUser,
             token
         }
+    }
+
+    @UseGuards(LocalAuthGuard)
+    @Post('/signout')
+    async signout(@Req() req) {
+        req.logout();
+    }
+
+    @UseGuards(LocalAuthGuard)
+    @Get('/me')
+    async me(@Req() req) {
+        return req.user;
     }
 }
