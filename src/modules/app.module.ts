@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { Service } from './tokens';
 import { ConferenceJobModule } from './conference-job/conference-job.module';
 import { SocketGatewayModule } from './socket-gateway/socket-gateway.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports:
@@ -30,7 +31,8 @@ import { SocketGatewayModule } from './socket-gateway/socket-gateway.module';
         UserModule,
         ConferenceJobModule,
         ConferencesModule,
-        SocketGatewayModule
+        SocketGatewayModule,
+        AuthModule
     ]
 })
 export class ApplicationModule {

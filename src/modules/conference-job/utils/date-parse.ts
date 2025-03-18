@@ -10,9 +10,13 @@ export function parseDateRange(dateRange: string): [Date, Date] {
     parts = dateRange.split("-");
   }
   if (parts.length !== 2) {
-    const singleDate =  parser.fromString(dateRange);
-    if(!singleDate)
-      throw new Error(`Invalid date range format: ${dateRange}`);
+    let singleDate =  parser.fromString(dateRange);
+    if(!singleDate.isValid())
+      singleDate = parser.fromString('1' + dateRange);
+      if(!singleDate.isValid())
+      {
+        throw new Error(`Invalid date range format: ${dateRange}`);
+      }
     else 
       return [singleDate, singleDate]
   }

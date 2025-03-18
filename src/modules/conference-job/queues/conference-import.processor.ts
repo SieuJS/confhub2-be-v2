@@ -49,7 +49,7 @@ export class ConferenceImportProcessor extends WorkerHost {
             job.data.progress = 20;
             job.data.message = "Crawling conference data";
             const channel = "cfp-crawl-"+job.data.id;
-            this.messageService.sendMessage(channel, {progress : 20, message : "Crawling conference data"});
+            await this.messageService.sendMessage(channel, {progress : 20, message : "Crawling conference data", status : "processing"});
             await job.updateProgress(20);
 
             const crawlDataResponse =
@@ -67,7 +67,7 @@ export class ConferenceImportProcessor extends WorkerHost {
 
             job.data.progress = 40;
             job.data.message = "Crawl data success, importing data";
-            this.messageService.sendMessage(channel, {progress : 40, message : "Crawl data success, importing data"});
+            this.messageService.sendMessage(channel, {progress : 40, message : "Crawl data success, importing data" , status : "processing"});
             await job.updateProgress(40);
 
             const crawlData = crawlDataResponse.data[0];
@@ -89,7 +89,7 @@ export class ConferenceImportProcessor extends WorkerHost {
             job.data.progress = 60;
             job.data.message =
                 "Imported conference data, importing location data";
-            this.messageService.sendMessage(channel, {progress : 60, message : "Imported conference data, importing location data"});
+            this.messageService.sendMessage(channel, {progress : 60, message : "Imported conference data, importing location data"  , status : "processing"});
             await job.updateProgress(60);
 
             const locationData =
@@ -156,7 +156,7 @@ export class ConferenceImportProcessor extends WorkerHost {
 
             job.data.progress = 100;
             job.data.message = "Imported conference data";
-            this.messageService.sendMessage(channel, {progress : 100, message : "Imported conference data"});
+            this.messageService.sendMessage(channel, {progress : 100, message : "Imported conference data", status : "completed"});
             await job.updateProgress(100);
 
             await this.conferenceCrawlJobService.updateConferenceCrawlJob(job.data.id , {

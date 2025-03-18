@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { UserInput } from "../models/user.input";
 import { PrismaService } from "../../common";
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UserService {
@@ -81,4 +82,20 @@ export class UserService {
         })
     }
 
+
+    
+
+    async generateToken(userId : string) {
+        const env = process.env ; 
+        const token = jwt.sign({
+            userId,
+            role : "user"
+        }, env.JWT_SECRET, {
+            expiresIn : '1h',
+            issuer : env.JWT_ISSUER
+        });
+        return token;
+    }
+
+    
 }

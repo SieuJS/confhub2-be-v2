@@ -1,8 +1,10 @@
-import { Body, Controller, Get, HttpException, Post, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Post, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { UserService } from "../services/user.service";
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { UserInput, UserSigninInput } from "../models/user.input";
 import * as crypto from 'crypto';
+import { LocalAuthGuard } from "../../auth/guards/local.guard";
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags('user')
 @Controller('/user')
@@ -18,26 +20,19 @@ export class UserController {
         return await this.userService.getAllUsers();
     }
 
+    @UseGuards(AuthGuard('local'))
     @Post('/signin') 
     @ApiBody({
         type : UserSigninInput
     })
-    async signin(@Body() input : UserSigninInput) {
-        const user =  await this.userService.getUserByEmail(input.email);
-        if(!user) {
-            return new HttpException('User not found', 404);
-        }
-        // Compare the hashed password with the input password
-        const hashedInputPassword = crypto.createHash('sha256').update(input.password).digest('hex');
-        const isPasswordValid = hashedInputPassword === user.password;
-        if (!isPasswordValid) {
-            return new HttpException('Invalid password', 401);
-        }
-
+    async signin(@Req() req) {
+        const user = req.user;
+        const token = await this.userService.generateToken(user.id);    
         // If password is valid, return user or token
         return {
             message: "Login successful",
-            user
+            user,
+            token
         };
     }
 
@@ -54,18 +49,36 @@ export class UserController {
             }
         }
         const hashedPassword = crypto.createHash('sha256').update(input.password).digest('hex');
-        await this.userService.createUser({
+        const newUser = await this.userService.createUser({
             ...input,
             password : hashedPassword
         });
+
+        const token = await this.userService.generateToken(newUser.id);
+        
         return {
-            message : "User created"
+            message : "User created",
+            user : newUser,
+            token
         }
     }
 
+<<<<<<< HEAD
 
     @Post('/follow-conference')
     async followConference(@Body() input : {userId : string, conferenceId : string}) {
         return await this.userService.followConference(input.userId, input.conferenceId);
+=======
+    @UseGuards(LocalAuthGuard)
+    @Post('/signout')
+    async signout(@Req() req) {
+        req.logout();
+    }
+
+    @UseGuards(LocalAuthGuard)
+    @Get('/me')
+    async me(@Req() req) {
+        return req.user;
+>>>>>>> 2467d3f32a124f54502c672a46f4e516feed7899
     }
 }
