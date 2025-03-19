@@ -14,7 +14,6 @@ export class UserController {
     ) {
         
     }
-
     @Get() 
     async getAllUsers() {
         return await this.userService.getAllUsers();
@@ -63,12 +62,6 @@ export class UserController {
         }
     }
 
-<<<<<<< HEAD
-
-    @Post('/follow-conference')
-    async followConference(@Body() input : {userId : string, conferenceId : string}) {
-        return await this.userService.followConference(input.userId, input.conferenceId);
-=======
     @UseGuards(LocalAuthGuard)
     @Post('/signout')
     async signout(@Req() req) {
@@ -79,6 +72,5 @@ export class UserController {
     @Get('/me')
     async me(@Req() req) {
         return req.user;
->>>>>>> 2467d3f32a124f54502c672a46f4e516feed7899
     }
 }
