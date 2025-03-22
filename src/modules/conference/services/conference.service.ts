@@ -206,7 +206,7 @@ export class ConferenceService {
         return consferences;
     }
 
-    async getConferenceById(id: string) {
+    async getConferenceById(id: string)  {
         return await this.prismaService.conferences.findUnique({
             where: {
                 id,
@@ -241,6 +241,7 @@ export class ConferenceService {
                 title: conference.title,
                 acronym: conference.acronym,
                 creatorId: conference.creatorId,
+                status : 'pending',
                 createdAt: new Date(),
                 updatedAt: new Date(),
             },
@@ -266,6 +267,7 @@ export class ConferenceService {
                 title: conference.title,
                 acronym: conference.acronym,
                 creatorId: conference.creatorId,
+                status : 'pending',
                 createdAt: new Date(),
                 updatedAt: new Date(),
             },
@@ -353,6 +355,7 @@ export class ConferenceService {
                 title: conferenceImport.title,
                 acronym: conferenceImport.acronym,
                 creatorId: conferenceImport.creatorId,
+                status : 'pending',
                 createdAt: new Date(),
                 updatedAt: new Date(),
             },
@@ -408,6 +411,7 @@ export class ConferenceService {
                 updatedAt: conference.updatedAt,
                 creatorId: conference.creatorId,
                 accessType: null,
+                status : conference.status
             };
         }
 
@@ -453,6 +457,7 @@ export class ConferenceService {
             updatedAt: conference.updatedAt,
             creatorId: conference.creatorId,
             accessType: organization.accessType,
+            status : conference.status
         };
         return conferenceDTO;
     }

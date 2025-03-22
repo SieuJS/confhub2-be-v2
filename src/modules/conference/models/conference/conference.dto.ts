@@ -58,4 +58,10 @@ export class ConferenceDTO {
     })
     accessType : string;
 
+    @ApiProperty({
+        description : "Status of conference",
+        example : "pending"
+    })
+    status : string;
+
 }

@@ -10,6 +10,7 @@ import { Service } from './tokens';
 import { ConferenceJobModule } from './conference-job/conference-job.module';
 import { SocketGatewayModule } from './socket-gateway/socket-gateway.module';
 import { AuthModule } from './auth/auth.module';
+import { FeedbacksModule } from './feedbacks/feedbacks.module';
 
 @Module({
     imports:
@@ -32,7 +33,8 @@ import { AuthModule } from './auth/auth.module';
         ConferenceJobModule,
         ConferencesModule,
         SocketGatewayModule,
-        AuthModule
+        AuthModule,
+        FeedbacksModule
     ]
 })
 export class ApplicationModule {

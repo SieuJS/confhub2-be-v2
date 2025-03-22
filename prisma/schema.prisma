@@ -87,6 +87,7 @@ model Conferences {
   creatorId     String
   createdAt     DateTime                  @default(now())
   updatedAt     DateTime                  @updatedAt
+  status        String
   follows       ConferenceFollows []
   likes         ConferenceLikes[]
   calendars     ConferenceCalendars[]
@@ -94,7 +95,7 @@ model Conferences {
   ranks         ConferenceRanks[]
   crawlJobs     ConferenceCrawlJobs[]
   createdByUser Users                     @relation(fields: [creatorId], references: [id])
-
+  feedbacks     ConferenceFeedbacks[]
   @@unique([title, acronym])
 }
 
@@ -193,6 +194,18 @@ model ConferenceLikes {
   @@unique([conferenceId, userId])
 }
 
+model ConferenceFeedbacks {
+  id          String      @id @default(uuid())
+  conferenceId String
+  creatorId       String
+  description String
+  star        Int
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  belongsTo    Conferences @relation(fields: [conferenceId], references: [id])
+  byUser       Users       @relation(fields: [creatorId], references: [id])
+}
+
 model ConferenceCalendars {
   id         String      @id @default(uuid())
   conferenceId String
@@ -241,6 +254,7 @@ model Users {
   createdJournals    Journals[]
   journalLikes       JournalLikes[]
   journalFollows     JournalFollows[]
+  feedbacks          ConferenceFeedbacks[]
 }
 
 model ConferenceCrawlJobs {

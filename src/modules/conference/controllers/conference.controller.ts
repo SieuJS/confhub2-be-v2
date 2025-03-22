@@ -20,6 +20,7 @@ import { GetConferencesParams } from "../models/conference-request/get-conferenc
 import { AdminService } from "../../user/services/admin.service";
 import { ConferenceRankService } from "../services/conference-rank.service";
 import { UserService } from "../../user/services/user.service";
+import { ConferenceFollowInput } from "../models/conference-follow/conference-follow.input";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -73,7 +74,8 @@ export class ConferenceController {
                     createdAt : conference.createdAt,
                     updatedAt : conference.updatedAt,
                     creatorId : conference.creatorId,
-                    accessType : null
+                    accessType : null,
+                    status : conference.status
                 }
             }
             
@@ -108,7 +110,8 @@ export class ConferenceController {
                 createdAt : conference.createdAt,
                 updatedAt : conference.updatedAt,
                 creatorId : conference.creatorId,
-                accessType : organization.accessType
+                accessType : organization.accessType,
+                status : conference.status
 
             }
             return conferenceDTO;
@@ -256,6 +259,7 @@ export class ConferenceController {
     }
 
     @Post('follow')
+    @ApiBody({type : ConferenceFollowInput})
     async followConference(@Body() input : {userId : string, conferenceId : string}) {
         const conferenceIds= await this.userService.followConference(input.userId, input.conferenceId);
         return conferenceIds;
@@ -270,8 +274,12 @@ export class ConferenceController {
     @Get('followed')
     async getFollowedConferences(@Query('userId') userId : string) {
         const conferenceIds = await this.userService.getFollowedConferences(userId);
+        console.log(conferenceIds); 
         const results = await Promise.all(conferenceIds.map(async conferenceId => {
-            return await this.conferenceService.getConferenceById(conferenceId.id);
+            return await this.conferenceService.getConferenceById(conferenceId.conferenceId);
         }))
+        return results;
     }
+
+
 }

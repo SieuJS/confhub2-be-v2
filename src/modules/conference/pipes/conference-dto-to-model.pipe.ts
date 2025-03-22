@@ -11,8 +11,10 @@ export class ConferenceDtoToModelPipe implements PipeTransform<ConferenceDTO, Co
             title : value.title,
             acronym : value.acronym,
             creatorId : value.creatorId,
+            status : 'pending',
             createdAt : new Date(),
             updatedAt : new Date(),
+        
         }
         return conference;
     }
