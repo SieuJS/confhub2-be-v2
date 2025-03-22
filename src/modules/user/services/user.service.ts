@@ -35,7 +35,7 @@ export class UserService {
     }
     
     async followConference(userId : string, conferenceId : string) {
-        return await this.prismaService.conferenceLikes.create({
+        return await this.prismaService.conferenceFollows.create({
             data : {
                 userId,
                 conferenceId
@@ -44,7 +44,7 @@ export class UserService {
     }
 
     async unfollowConference(userId : string, conferenceId : string) {
-        return await this.prismaService.conferenceLikes.delete({
+        return await this.prismaService.conferenceFollows.delete({
             where : {
                 conferenceId_userId : {
                     userId,
@@ -55,7 +55,7 @@ export class UserService {
     }
 
     async getFollowedConferences(userId : string) {
-        return await this.prismaService.conferenceLikes.findMany({
+        return await this.prismaService.conferenceFollows.findMany({
             where : {
                 userId
             }
@@ -81,9 +81,6 @@ export class UserService {
             }
         })
     }
-
-
-    
 
     async generateToken(userId : string) {
         const env = process.env ; 

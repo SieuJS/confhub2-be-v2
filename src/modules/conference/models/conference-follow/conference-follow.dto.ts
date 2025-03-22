@@ -19,8 +19,8 @@ export class ConferenceFollowDTO {
     user : UserPublicDTO;
     
     @ApiProperty({description : "Created at"})
-    createdAt: string; 
+    createdAt: Date; 
 
     @ApiProperty({description : "Updated at"})
-    updatedAt: string;
+    updatedAt: Date;
 }

@@ -21,6 +21,7 @@ import { AdminService } from "../../user/services/admin.service";
 import { ConferenceRankService } from "../services/conference-rank.service";
 import { UserService } from "../../user/services/user.service";
 import { ConferenceFollowInput } from "../models/conference-follow/conference-follow.input";
+import { ConferenceDetailDTO } from "../models/conference/conference-detail.dto";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -210,19 +211,29 @@ export class ConferenceController {
     }
     
     @Get(':id')
-    async getConferenceById(@Param('id') id : string) {
+    async getConferenceDetail(@Param('id') id : string) : Promise<ConferenceDetailDTO> {
         const conference = await this.conferenceService.getConferenceById(id);
         const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
         const locations = await this.conferenceOrganizationService.getLocationsByOrganizedId(organization.id);
         const dates = await this.conferenceOrganizationService.getDatesByOrganizedId(organization.id);
         const ranks = await this.conferenceRankService.getRankByConferenceId(conference.id);
-
+        const folowBy = await this.conferenceService.getFollowedByConferenceId(conference.id);
         return {
-            conference,
+            conference : {
+                id : conference.id,
+                title : conference.title,
+                acronym : conference.acronym,
+                creatorId : conference.creatorId,
+                createdAt : conference.createdAt,
+                updatedAt : conference.updatedAt,
+                creatorName : null
+            },
             organization,
-            locations,
+            location : locations[0],
             dates,
-            ranks
+            ranks,
+            followBy : folowBy,
+            feedbacks : []
         }
     }
 
@@ -279,6 +290,12 @@ export class ConferenceController {
             return await this.conferenceService.getConferenceById(conferenceId.conferenceId);
         }))
         return results;
+    }
+
+    @Get('followedBy/:conferenceId')
+    @ApiParam({name : 'conferenceId'})
+    async getFollowedByConferenceId(@Param('conferenceId') conferenceId : string) {
+        return await this.conferenceService.getFollowedByConferenceId(conferenceId);
     }
 
 

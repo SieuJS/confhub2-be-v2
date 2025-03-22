@@ -14,6 +14,7 @@ import {
 } from "../../source-rank";
 import { ConferenceOrganizationSerivce } from "../../conference-organization";
 import { ConferenceRankService } from "./conference-rank.service";
+import { ConferenceFollowByDTO } from "../models/conference-follow/conference-follow-by.dto";
 
 @Injectable()
 export class ConferenceService {
@@ -480,5 +481,42 @@ export class ConferenceService {
             dates,
             ranks
         }
+    }
+
+    async getFollowedByConferenceId(conferenceId: string) : Promise<ConferenceFollowByDTO[]> {
+        const follows = await this.prismaService.conferenceFollows.findMany({
+            where : {
+                conferenceId
+            },
+            include : {
+                byUser : {
+                    select : {
+                        lastName : true,
+                        firstName : true,
+                        email : true,
+                    }
+                }
+            }
+        })
+
+        console.log(follows)
+
+        const results = follows.map(( follow) : ConferenceFollowByDTO => {
+            return {
+                id : follow.id,
+                userId : follow.userId,
+                user : {
+                    email : follow.byUser.email,
+                    firstName : follow.byUser.firstName,
+                    lastName : follow.byUser.lastName
+                },
+                createdAt : follow.createdAt,
+                updatedAt : follow.updatedAt
+            }
+        }
+        )
+
+        return results
+
     }
 }
