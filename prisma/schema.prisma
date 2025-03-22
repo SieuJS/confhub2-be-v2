@@ -50,6 +50,7 @@ model ConferenceOrganizations {
   conferenceDates ConferenceDates[]
   locations       Locations[]
   conferenceId    String
+  publisher       String
   summerize       String
   callForPaper    String
   link            String

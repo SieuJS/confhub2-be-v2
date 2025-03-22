@@ -22,6 +22,7 @@ import { ConferenceRankService } from "../services/conference-rank.service";
 import { UserService } from "../../user/services/user.service";
 import { ConferenceFollowInput } from "../models/conference-follow/conference-follow.input";
 import { ConferenceDetailDTO } from "../models/conference/conference-detail.dto";
+import { ConferenceFeedBackInputDTO } from "../models/conference-feedback/conference-feedback.input";
 
 @ApiTags("/conference")
 @Controller("conference")
@@ -50,8 +51,18 @@ export class ConferenceController {
         } else if(topics) {
             params.topics = [topics];
         }
+        if(params.startDate) {
+            params.fromDate = params.startDate;
+        }
+        if(params.endDate) {
+            params.toDate = params.endDate;
+        }
+        if(params.type) {
+            params.accessType = params.type;
+        }
+        
+        console.log('params', params);
         const conferences =  await this.conferenceService.getConferences(params);
-    
         const conferenceToResponse : ConferenceDTO[] = await Promise.all(conferences.map( async conference => {
             const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
             if(!organization) {
@@ -81,7 +92,57 @@ export class ConferenceController {
             }
             
             const locations = await this.conferenceOrganizationService.getLocationsByOrganizedId(organization.id);
+            if(locations.length === 0) {
+                return {
+                    id : conference.id,
+                    title : conference.title,
+                    acronym : conference.acronym,
+                    location : {
+                        cityStateProvince : null,
+                        country : null,
+                        address : null,
+                        continent : null,
+                    },
+                    rank : null,
+                    source : null,
+                    year : null,
+                    researchFields: [],
+                    topics : [],
+                    dates : null,
+                    link : null,
+                    createdAt : conference.createdAt,
+                    updatedAt : conference.updatedAt,
+                    creatorId : conference.creatorId,
+                    accessType : null,
+                    status : conference.status
+                }}
             const dates = await this.conferenceOrganizationService.getDatesByOrganizedId(organization.id);
+            if(dates.length === 0) {
+                return {
+                    id : conference.id,
+                    title : conference.title,
+                    acronym : conference.acronym,
+                    location : {
+                        cityStateProvince : locations[0].cityStateProvince,
+                        country : locations[0].country,
+                        address : locations[0].address,
+                        continent : locations[0].continent,
+                    },
+                    rank : conference.ranks[0]?.byRank?.name,
+                    source : conference.ranks[0]?.byRank?.belongsToSource.name,
+                    year : conference.ranks[0]?.year,
+                    researchFields: conference.ranks.map(rank => rank.inFieldOfResearch.name),
+                    topics : organization.topics,
+                    dates : null,
+                    link : organization.link,
+                    createdAt : conference.createdAt,
+                    updatedAt : conference.updatedAt,
+                    creatorId : conference.creatorId,
+                    accessType : organization.accessType,
+                    status : conference.status
+                }
+            }
+
             const conferenceDTO : ConferenceDTO = {
                 id : conference.id,
                 title : conference.title,
@@ -117,7 +178,8 @@ export class ConferenceController {
             }
             return conferenceDTO;
         }))
-        return this.paginationService.paginate(conferenceToResponse, params.curPage, params.perPage);
+
+        return this.paginationService.paginate(conferenceToResponse, params.page, parseInt(params.perPage as any));
     }
 
     @Get('all') 
@@ -218,6 +280,7 @@ export class ConferenceController {
         const dates = await this.conferenceOrganizationService.getDatesByOrganizedId(organization.id);
         const ranks = await this.conferenceRankService.getRankByConferenceId(conference.id);
         const folowBy = await this.conferenceService.getFollowedByConferenceId(conference.id);
+        const feedbacks = await this.conferenceService.getFeedbacksByConferenceId(conference.id);
         return {
             conference : {
                 id : conference.id,
@@ -233,7 +296,7 @@ export class ConferenceController {
             dates,
             ranks,
             followBy : folowBy,
-            feedbacks : []
+            feedbacks : feedbacks
         }
     }
 
@@ -285,7 +348,6 @@ export class ConferenceController {
     @Get('followed')
     async getFollowedConferences(@Query('userId') userId : string) {
         const conferenceIds = await this.userService.getFollowedConferences(userId);
-        console.log(conferenceIds); 
         const results = await Promise.all(conferenceIds.map(async conferenceId => {
             return await this.conferenceService.getConferenceById(conferenceId.conferenceId);
         }))
@@ -298,5 +360,16 @@ export class ConferenceController {
         return await this.conferenceService.getFollowedByConferenceId(conferenceId);
     }
 
+    @Post('feedback')
+    @ApiBody({type : ConferenceFeedBackInputDTO})
+    async createFeedback(@Body() input : ConferenceFeedBackInputDTO) {
+        return await this.conferenceService.createFeedback(input);
+    }
+
+    @Get('feedback/:conferenceId')
+    @ApiParam({name : 'conferenceId'})
+    async getFeedbackByConferenceId(@Param('conferenceId') conferenceId : string) {
+        return await this.conferenceService.getFeedbacksByConferenceId(conferenceId);
+    }
 
 }

@@ -22,10 +22,11 @@ export function parseDateRange(dateRange: string): [Date, Date] {
   }
 
   let firstPart = parts[0].trim();
-  let lastPart = parts[1].trim();
+  let lastPart =firstPart.split(' ')[0] +" " + parts[1].trim() ;
   // Ensure that lastPart includes a year
+  firstPart += ' ' + lastPart.split(' ')[2];
+
   let lastDate = parser.fromString(lastPart);
-  
   if(! lastDate.isValid()) {
     lastPart = firstPart.split(' ')[0] + lastPart
     lastDate = parser.fromString(lastPart)
@@ -36,6 +37,7 @@ export function parseDateRange(dateRange: string): [Date, Date] {
   let firstDate = parser.fromString(firstPart);
   
   if (!firstDate) {
+
     firstPart += ` ${lastDate.getFullYear()}`;
     firstDate = parser.fromString(firstPart);
   }

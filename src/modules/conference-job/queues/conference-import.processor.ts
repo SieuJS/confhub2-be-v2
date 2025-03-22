@@ -72,6 +72,20 @@ export class ConferenceImportProcessor extends WorkerHost {
 
             const crawlData = crawlDataResponse.data[0];
 
+            if(!crawlData.link) {
+                this.messageService.sendMessage(channel, {progress : 100, message : "No link found for "+job.data.conferenceTitle, status : "failed"});
+                await job.updateProgress(100);
+                await this.conferenceCrawlJobService.updateConferenceCrawlJob(job.data.id , {
+                    status : ConferenceAttribute.JOB_STATUS_FAILED,
+                    progress : 100,
+                    message : "No link found for "+job.data.conferenceTitle
+                });
+                this.loggerService.error(
+                    `No link found for ${job.data.conferenceTitle}`
+                );
+                return;
+            }
+
             const organizeData =
                 await this.conferenceOrganizationService.importOrganize({
                     year: parseInt(crawlData.year),
@@ -84,6 +98,7 @@ export class ConferenceImportProcessor extends WorkerHost {
                     conferenceId: job.data.conferenceId,
                     topics: crawlData.topics.split(","),
                     isAvailable: true,
+                    publisher : crawlData.publisher
                 });
 
             job.data.progress = 60;
@@ -115,6 +130,8 @@ export class ConferenceImportProcessor extends WorkerHost {
                 "conferenceDates",
                 organizeData.id
             );
+
+            console.log("input",conferenceDateInput)
             const submissionDateInput = convertObjectToDate(
                 submissionDate,
                 "submissionDate",
@@ -201,6 +218,7 @@ const converStringToDate = (
     type: string,
     organizedId
 ): ConferenceDateInput[] => {
+    console.log("date", date);
     const [fromDate, toDate] = parseDateRange(date);
     return [
         {

@@ -42,6 +42,7 @@ export class ConferenceOrganizationSerivce {
     }
 
     async importTopics (organizedId : string ,topics : string[]) {
+        topics = topics.map(topic => topic.trim()); 
         let topicsInDb = await this.prismaService.topics.findMany({
             where : {
                 name : {
@@ -76,6 +77,10 @@ export class ConferenceOrganizationSerivce {
 
     async importOrganize(input : OrganizedInput) : Promise<OrganizedDTO> {
         
+        if(!input.link) {
+            return undefined;
+        }
+
         const organize = await this.prismaService.conferenceOrganizations.create({
             data : {
                 year    : input.year,
@@ -87,6 +92,7 @@ export class ConferenceOrganizationSerivce {
                 summerize : input.summerize,
                 callForPaper : input.callForPaper,
                 conferenceId : input.conferenceId,
+                publisher : input.publisher,
             }
         })
 

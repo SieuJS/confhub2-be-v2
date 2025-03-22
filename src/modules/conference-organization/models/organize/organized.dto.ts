@@ -12,5 +12,6 @@ export class OrganizedDTO{
     impLink : string;
     summerize : string;
     callForPaper : string;
+    publisher : string;
     topics : string[];
 }

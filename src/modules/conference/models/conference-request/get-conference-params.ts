@@ -6,7 +6,7 @@ export class GetConferencesParams extends ConferenceFilter {
         description : "The page number",
         required : false
     })
-    curPage? : number;
+    page? : number;
 
     @ApiProperty({
         description : "The page size",

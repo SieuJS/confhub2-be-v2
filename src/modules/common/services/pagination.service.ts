@@ -14,6 +14,7 @@ export class PaginationService<T> {
         payload : T[],
         meta : PaginationDTO
     }{
+        perPage = isNaN(perPage) ? 10 : perPage;
         const start = (curPage - 1) * perPage;
         const end = start + perPage;
         const payload = items.slice(start, end);

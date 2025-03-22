@@ -15,6 +15,8 @@ import {
 import { ConferenceOrganizationSerivce } from "../../conference-organization";
 import { ConferenceRankService } from "./conference-rank.service";
 import { ConferenceFollowByDTO } from "../models/conference-follow/conference-follow-by.dto";
+import { ConferenceFeedBackDTO } from "../models/conference-feedback/conference-feedback.dto";
+import { ConferenceFeedBackInputDTO } from "../models/conference-feedback/conference-feedback.input";
 
 @Injectable()
 export class ConferenceService {
@@ -28,7 +30,15 @@ export class ConferenceService {
         private readonly conferenceRankService: ConferenceRankService
     ) {}
 
-    async getConferences(conferenceFilter?: ConferenceFilter) {
+    async getConferences(conferenceFilter?: ConferenceFilter ) {
+        const {sortBy, sortOrder} = conferenceFilter;
+
+        const orderBy = sortBy ? {
+            [sortBy] : sortOrder
+        } : {
+            createdAt : 'desc'
+        }
+
         const include = {
             ranks: {
                 include: {
@@ -109,10 +119,19 @@ export class ConferenceService {
                 conferenceFilter.toDate ||
                 conferenceFilter.cityStateProvince ||
                 conferenceFilter.continent ||
-                conferenceFilter.country
+                conferenceFilter.country ||
+                conferenceFilter.accessType
                     ? {
                           organizations: {
                               some: {
+                                ...
+                                    (conferenceFilter.accessType
+                                    ? {
+                                    accessType: {
+                                        contains: conferenceFilter.accessType,
+                                        mode: "insensitive",
+                                    }} : {}
+                                ),
                                   ...(conferenceFilter.topics
                                       ? {
                                             topics: {
@@ -121,6 +140,7 @@ export class ConferenceService {
                                                         name: {
                                                             in: conferenceFilter.topics,
                                                             mode: "insensitive",
+                                                            
                                                         },
                                                     },
                                                 },
@@ -171,6 +191,7 @@ export class ConferenceService {
                                       },
                                   },
                                   conferenceDates: {
+
                                       ...(conferenceFilter.fromDate ||
                                       conferenceFilter.toDate
                                           ? {
@@ -180,15 +201,20 @@ export class ConferenceService {
                                                               fromDate: {
                                                                   gte: parser.fromString(
                                                                       conferenceFilter.fromDate
-                                                                  ),
+                                                                      ),
                                                               },
                                                           }
                                                         : {}),
 
                                                     ...(conferenceFilter.toDate
                                                         ? {
+                                                            fromDate: {
+                                                                lte: parser.fromString(
+                                                                    conferenceFilter.toDate
+                                                                ),
+                                                            },
                                                               toDate: {
-                                                                  lte: parser.fromString(
+                                                                  gte: parser.fromString(
                                                                       conferenceFilter.toDate
                                                                   ),
                                                               },
@@ -518,5 +544,52 @@ export class ConferenceService {
 
         return results
 
+    }
+
+    async createFeedback(input : ConferenceFeedBackInputDTO)  {
+        return this.prismaService.conferenceFeedbacks.create({
+            data : {
+                conferenceId : input.conferenceId,
+                creatorId : input.creatorId,
+                description : input.description,
+                star : input.star,
+            }
+        })
+    }
+
+    async getFeedbacksByConferenceId(conferenceId : string) : Promise<ConferenceFeedBackDTO[]> {
+        const feedbacks = await this.prismaService.conferenceFeedbacks.findMany({
+            where : {
+                conferenceId
+            },
+            include : {
+                byUser : {
+                    select : {
+                        email : true,
+                        firstName : true,
+                        lastName : true
+                    }
+                }
+            }
+        })
+
+        const results = feedbacks.map(( feedback ) : ConferenceFeedBackDTO => {
+            return {
+                id : feedback.id,
+                creatorId : feedback.creatorId,
+                conferenceId : feedback.conferenceId,
+                description : feedback.description,
+                star : feedback.star,
+                createdAt : feedback.createdAt,
+                updatedAt : feedback.updatedAt,
+                user : {
+                    email : feedback.byUser.email,
+                    firstName : feedback.byUser.firstName,
+                    lastName : feedback.byUser.lastName
+                }
+            }
+        })
+
+        return results
     }
 }

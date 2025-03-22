@@ -82,4 +82,42 @@ export class ConferenceFilter {
         required : false
     })
     accessType? : string;
+
+    @ApiProperty({
+        description : "The conference publisher",
+        required : false
+    })
+    publisher? : string;
+
+    @ApiProperty({
+        description : "Sort by",
+        required : false
+    })
+    sortBy? : 'date' | 'rank' | 'name' | 'submissionDate' | 'startDate' | 'endDate';
+
+    @ApiProperty({
+        description : "Sort order",
+        required : false
+    })
+    sortOrder? : 'asc' | 'desc';
+
+    @ApiProperty({ 
+        description : "The start date of conference",
+        required : false
+    })
+    startDate : string;
+
+    @ApiProperty({
+        description : "The end date of conference",
+        required : false
+    })
+    endDate : string;
+
+    @ApiProperty({
+        description : "type of conference",
+        required : false
+    })
+    type : string;
+
 }
+
