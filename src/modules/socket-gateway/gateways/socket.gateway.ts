@@ -1,13 +1,15 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { randomUUID } from 'crypto';
+import { Injectable } from '@nestjs/common';
 
 @WebSocketGateway({
     cors: {
         origin: '*',
     },
 })
-export class ConferenceImportGateway {
+@Injectable()
+export class SocketGateway {
     @WebSocketServer()
     server: Server;
 
@@ -41,4 +43,4 @@ export class ConferenceImportGateway {
     handleDisconnect(client: Socket) {
         console.log(`Client disconnected: ${client.id}`);
     }
-}
+} 

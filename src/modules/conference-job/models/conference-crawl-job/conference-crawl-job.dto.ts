@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsIn } from "class-validator";
-import { ConferenceAttribute } from "../../constants/conference-attribute";
+import { ConferenceAttribute } from "../../../../constants/conference-attribute";
 
 export class ConferenceCrawlJobDTO {
     @ApiProperty({description : 'Id of conference crawl job' , example : '123e4567-e89b-12d3-a456-426614174000'})

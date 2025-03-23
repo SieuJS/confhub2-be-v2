@@ -19,7 +19,7 @@ export class ConferenceDTO {
 
     @ApiProperty({description : "Location of conference" , example : 'Paris'})
     @Length(1, 255)
-    location: ConferenceLocation[]
+    location: ConferenceLocation
 
     @ApiProperty({description : 'Rank of conference', example : 'A*'})
     rank: string
@@ -31,13 +31,13 @@ export class ConferenceDTO {
     year: number
 
     @ApiProperty({description : 'Field of conference', example : ['4601', '4602'] , isArray : true})
-    fieldOfResearchCodes: string[]
+    researchFields: string[]
 
     @ApiProperty({description : 'Topics of conference', example : 'Artificial Intelligence'})
     topics: string[]
 
     @ApiProperty({description : 'Conference dates',type : ConferenceDatesDTO})
-    dates: ConferenceDatesDTO[]
+    dates: ConferenceDatesDTO
 
     @ApiProperty({description : 'Conference link', example : 'https://www.conference.com'})
     link: string
@@ -51,5 +51,17 @@ export class ConferenceDTO {
     @ApiProperty({description : "Id of user who created the conference", example : '123e4567-e89b-12d3-a456-426614174000'})
     @IsUUID()
     creatorId: string
+
+    @ApiProperty({
+        description : "Type of conference",
+        example : "hybrid"
+    })
+    accessType : string;
+
+    @ApiProperty({
+        description : "Status of conference",
+        example : "pending"
+    })
+    status : string;
 
 }

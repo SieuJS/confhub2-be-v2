@@ -7,12 +7,19 @@ export class ConferenceQueryDto extends PickType(ConferenceDTO, [
     "source",
     "rank",
     "year",
-    "fieldOfResearchCodes",
-]) {
+    "researchFields",
+])  {
     @ApiProperty({ description: "From Date", type: Date, required: false })
     fromDate: Date;
 
     @ApiProperty({ description: "To Date", type: Date, required: false })
     toDate: Date;
+
+    @ApiProperty({description : "Page Number", type : Number, required : false})
+    page : number
+
+    @ApiProperty({description : "Items per page", type : Number, required : false})
+    perPage : number
+
 }
  

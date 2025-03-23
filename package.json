@@ -19,23 +19,32 @@
   "dependencies": {
     "@fastify/helmet": "^11.1.1",
     "@fastify/static": "^6.12.0",
+    "@nestjs/axios": "^4.0.0",
     "@nestjs/bullmq": "^11.0.2",
     "@nestjs/common": "^10.3.0",
     "@nestjs/core": "^10.3.0",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-fastify": "^10.3.0",
     "@nestjs/platform-socket.io": "^11.0.11",
     "@nestjs/swagger": "^7.1.17",
     "@nestjs/terminus": "^10.2.0",
     "@nestjs/testing": "^10.3.0",
     "@nestjs/websockets": "^11.0.11",
-    "@prisma/client": "^5.8.0",
+    "@prisma/client": "^5.14.0",
+    "any-date-parser": "^2.0.3",
+    "axios": "^1.8.2",
+    "bcrypt": "^5.1.1",
     "bullmq": "^5.41.7",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "fastify": "^4.25.2",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.12",
-    "rxjs": "^7.8.1",
+    "rxjs": "^7.8.2",
     "socket.io": "^4.8.1",
     "winston": "^3.11.0"
   },
@@ -43,6 +52,7 @@
     "@types/jest": "^29.5.11",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.0.0",
+    "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.1",
@@ -64,5 +74,6 @@
     "hooks": {
       "pre-commit": "npm run lint"
     }
-  }
+  },
+  "packageManager": "pnpm@9.15.0+sha1.8bfdb6d72b4d5fdf87d21d27f2bfbe2b21dd2629"
 }

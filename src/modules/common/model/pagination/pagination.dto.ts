@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class PaginationDTO {
     @ApiProperty({description : "Page number", example : 1})
-    page : number
+    curPage : number
 
     @ApiProperty({description : "Items per page", example : 10})
     perPage : number
@@ -15,5 +15,8 @@ export class PaginationDTO {
 
     @ApiProperty({description : "Next page", example : 2})
     nextPage : number | null
+
+    @ApiProperty({description : "Total items", example : 100})
+    totalItems : number
 
 }

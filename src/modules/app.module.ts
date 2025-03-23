@@ -8,13 +8,16 @@ import { SourceRankModule } from './source-rank/source-rank.module';
 import { UserModule } from './user/user.module';
 import { Service } from './tokens';
 import { ConferenceJobModule } from './conference-job/conference-job.module';
+import { SocketGatewayModule } from './socket-gateway/socket-gateway.module';
+import { AuthModule } from './auth/auth.module';
+import { FeedbacksModule } from './feedbacks/feedbacks.module';
 
 @Module({
     imports:
     
     [
         CommonModule,
-        BullModule.forRootAsync({
+        BullModule.forRootAsync( {
             imports : [CommonModule],
             inject: [Service.CONFIG],
             useFactory : async (config : Config) => ({
@@ -28,7 +31,10 @@ import { ConferenceJobModule } from './conference-job/conference-job.module';
         SourceRankModule,
         UserModule,
         ConferenceJobModule,
-        ConferencesModule
+        ConferencesModule,
+        SocketGatewayModule,
+        AuthModule,
+        FeedbacksModule
     ]
 })
 export class ApplicationModule {
