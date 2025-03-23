@@ -61,7 +61,6 @@ export class ConferenceController {
             params.accessType = params.type;
         }
         
-        console.log('params', params);
         const conferences =  await this.conferenceService.getConferences(params);
         const conferenceToResponse : ConferenceDTO[] = await Promise.all(conferences.map( async conference => {
             const organization = await this.conferenceOrganizationService.getFirstOrganizationsByConferenceId(conference.id) ;
@@ -178,7 +177,7 @@ export class ConferenceController {
             }
             return conferenceDTO;
         }))
-
+        
         return this.paginationService.paginate(conferenceToResponse, params.page, parseInt(params.perPage as any));
     }
 

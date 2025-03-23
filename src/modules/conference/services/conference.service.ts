@@ -65,6 +65,72 @@ export class ConferenceService {
         const consferences = await this.prismaService.conferences.findMany({
             include,
             where: {
+                ...( conferenceFilter.keyword ? {OR: [
+                    {
+                        title: {
+                            contains: conferenceFilter.keyword,
+                            mode: "insensitive",
+                        },
+                    },
+                    {
+                        acronym: {
+                            contains: conferenceFilter.keyword,
+                            mode: "insensitive",
+                        },
+                    },
+                    {
+                        organizations: {
+                            some: {
+                                topics: {
+                                    some: {
+                                        inTopic: {
+                                            name: {
+                                                contains: conferenceFilter.keyword,
+                                                mode: "insensitive",
+                                            },
+                                        },
+                                    },
+                                },
+
+                            },
+                        },
+                    }, 
+                    {
+                        organizations: {
+                            some: {
+                                locations: {
+                                    some: {
+                                        address: {
+                                            contains: conferenceFilter.keyword,
+                                            mode: "insensitive",
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    {
+                        organizations : {
+                            some : {
+                                summerize : {
+                                    contains : conferenceFilter.keyword,
+                                    mode : "insensitive"
+                                }
+                            }
+                        }
+                    }, 
+                    {
+                        organizations : {
+                            some : {
+                                callForPaper : {
+                                    contains : conferenceFilter.keyword,
+                                    mode : "insensitive"
+                                }
+                            }
+                        }
+                    }
+                ]}  : {}),
+
                 ...(conferenceFilter.title
                     ? {
                           title: {

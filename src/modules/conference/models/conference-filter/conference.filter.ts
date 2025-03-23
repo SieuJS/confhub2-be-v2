@@ -119,5 +119,11 @@ export class ConferenceFilter {
     })
     type : string;
 
+    @ApiProperty({
+        description : "keyword",
+        required : false
+    })
+    keyword : string;
+
 }
 
